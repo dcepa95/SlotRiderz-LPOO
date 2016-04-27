@@ -1,8 +1,11 @@
 package game.logic;
 
 public class Vehicle {
-    private Position position;
+    private Position positionMap;
+    private Position positionPiece;
+
     private int lane;
+    private int orientation; //1->U, 2->D, 3->R, 4->L
     private double velocity;
 
     //----------------------------------------------------------------------------------------------------------------------------------------------
@@ -12,8 +15,9 @@ public class Vehicle {
      * -- Constructor --
      */
 
-    public Vehicle() {
-
+    public Vehicle(Position inicialMap, int lane) {
+        positionMap = inicialMap;
+        this.lane = lane;
         velocity = 0;
     }
 
@@ -23,9 +27,14 @@ public class Vehicle {
      * -- get Methods --
      */
 
-    public Position getPosition() {
+    public Position getPositionMap() {
 
-        return position;
+        return positionMap;
+    }
+
+    public Position getPositionPiece() {
+
+        return positionPiece;
     }
 
     public double getVelocity() {
@@ -41,17 +50,29 @@ public class Vehicle {
      * -- set Methods --
      */
 
-    public void setPosition(int x, int y){
+    public void setPositionMap(int x, int y){
 
-        position.x=x;
-        position.y=y;
+        positionMap.x=x;
+        positionMap.y=y;
+    }
+
+    public void setPositionPiece(int x, int y){
+
+        positionPiece.x=x;
+        positionPiece.y=y;
     }
 
     public void setVelocity(double v){
+
         velocity=v;
     }
 
     public void setLane(int lane) {
+
         this.lane=lane;
+    }
+
+    public void setOrientation(int ori){
+        orientation=ori;
     }
 }
