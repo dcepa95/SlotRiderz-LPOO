@@ -18,6 +18,7 @@ public class Player {
     private Array<Array<Vector2> > tracks;
     private Array<Integer> curveRightPoints;
     private Array<Integer> curveLeftPoints;
+    private float rejoinTime;
 
     public Player(Sprite sprite, Array<Array<Vector2> > tracks, Array<Array<Integer> > curves, int initialLane, Vector2 bPos, OrthographicCamera camera, SpriteBatch batch, ShapeRenderer sr){
         this.tracks=tracks;
@@ -30,7 +31,7 @@ public class Player {
 
     private void updateCarSpeed(float deltaTime) {
         if(Gdx.input.isKeyPressed(Input.Keys.UP)) {
-
+            car.setAccelerating(true);
             if (car.getSpeed() < car.getMaxSpeed()) {
                 if(car.getSpeed() + car.getAcceleration()*deltaTime > car.getMaxSpeed())
                     car.setSpeed(car.getMaxSpeed());
@@ -42,7 +43,7 @@ public class Player {
             }
 
         }else if(Gdx.input.isTouched()) {
-
+            car.setAccelerating(true);
             if (car.getSpeed() < car.getMaxSpeed()) {
                 if(car.getSpeed()+car.getAcceleration()*deltaTime>car.getMaxSpeed())
                     car.setSpeed(car.getMaxSpeed());
@@ -54,12 +55,12 @@ public class Player {
             }
 
         }else{
-
+            car.setAccelerating(false);
             if(car.getSpeed()>0){
-                if(car.getSpeed()-car.getBreaking()*deltaTime<0)
+                if(car.getSpeed()*0.95f<0)
                     car.setSpeed((float)0);
                 else
-                    car.setSpeed(car.getSpeed()-car.getBreaking()*deltaTime);
+                    car.setSpeed(car.getSpeed()*0.95f);
             }else{
                 car.setSpeed((float)0);
             }
@@ -100,11 +101,18 @@ public class Player {
     }
 
     public void update(float deltaTime){
-        updateCarSpeed(deltaTime);
-        updateLane();
-        car.setPath(tracks.get(lane));
-        isInCurve();
-        car.update(deltaTime,lane);
+        if(!car.isOffTrack()) {
+            updateCarSpeed(deltaTime);
+            updateLane();
+            car.setPath(tracks.get(lane));
+            isInCurve();
+            car.update(deltaTime, lane);
+            rejoinTime=0;
+        }else{
+            car.setSpeed(car.getSpeed()*0.9f);
+            car.update(deltaTime, lane);
+            rejoinRace();
+        }
     }
 
     public Car getCar() {
@@ -113,5 +121,12 @@ public class Player {
 
     public int getLap(){
         return car.getLap();
+    }
+
+    private void rejoinRace(){
+        rejoinTime+=Gdx.graphics.getDeltaTime();
+        if(rejoinTime>0.7f){
+            car.putInTrack();
+        }
     }
 }

@@ -11,7 +11,6 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
-import java.util.concurrent.Callable;
 
 /**
  * Created by digbe on 10/05/2016.
@@ -21,22 +20,26 @@ public class Car extends Sprite{
     private float speed = 0;
     private float driftSpeed = 300;
     private float acceleration=500;
-    private float breaking = 500;
+    private float breaking = 700;
     private int maxSpeed=700;
     private Array<Vector2> path;
     private int nextWaypoint=0;
     private int pos=0;
     private boolean changingLane=false;
     private int inCurve=0;  //0 out, 1 right , 2 left
-    private int inCurveDrift=0;
     private float angle;
     private float driftAngle=0;
+
+    private boolean accelerating=false;
+
+    private boolean offTrack=false;
 
     private int lap=0;
 
     private ShapeRenderer sr;
 
     private SpriteBatch batch;
+
     private OrthographicCamera camera;
     public Car(Sprite sprite, Array<Vector2> path, OrthographicCamera camera, SpriteBatch batch, ShapeRenderer sr){
         super(sprite);
@@ -45,7 +48,6 @@ public class Car extends Sprite{
         this.batch=batch;
         this.sr=sr;
     }
-
     @Override
     public void draw(Batch batch) {
         //update(Gdx.graphics.getDeltaTime());
@@ -53,13 +55,12 @@ public class Car extends Sprite{
     }
 
     public void update(float deltaTime, int lane) {
-        //updateSpeed(deltaTime);
         angle =(float) Math.atan2(path.get(nextWaypoint).y - getY()-getHeight()/2 , path.get(nextWaypoint).x - getX()-getWidth()/2);
         velocity.set( (float) Math.cos(angle)*speed , (float) Math.sin(angle)*speed );
         setCenter( getX() + getWidth()/2 + velocity.x * deltaTime , getY()+getHeight()/2 + velocity.y * deltaTime );
-        setOriginCenter();
+        //setOriginCenter();
         if(inCurve == 1) {
-            if(speed>driftSpeed) {
+            if(accelerating) {
                 switch(lane){
                     case 0:
                         this.driftAngle += speed / 4 * deltaTime;
@@ -74,9 +75,11 @@ public class Car extends Sprite{
                         this.driftAngle += speed / 16 * deltaTime;
                         break;
                 }
+            }else{
+                this.driftAngle *= 0.95f;
             }
         } else if(inCurve == 2){
-            if(speed>driftSpeed) {
+            if(accelerating) {
                 switch(lane){
                     case 0:
                         this.driftAngle -= speed / 16 * deltaTime;
@@ -91,15 +94,24 @@ public class Car extends Sprite{
                         this.driftAngle -= speed / 4 * deltaTime;
                         break;
                 }
+            }else{
+                this.driftAngle *= 0.95f;
             }
         }else
-            this.driftAngle *= .8;
+            this.driftAngle *= 0.8f;
 
-        setRotation(angle * MathUtils.radiansToDegrees - 90 - (driftAngle *(speed) / 500));
-//        setRotation(angle * MathUtils.radiansToDegrees - 90);
+        if(driftAngle>60 || driftAngle<-60){
+            offTrack=true;
+            if(driftAngle>0)
+                driftAngle+=20;
+            else
+                driftAngle-=20;
+            driftAngle*=0.95;
+            setRotation(angle * MathUtils.radiansToDegrees - 90 - (driftAngle));
+        }else
+            setRotation(angle * MathUtils.radiansToDegrees - 90 - (driftAngle *(speed) / 500));
 
         if(isWaypointReached()){
-            //setCenter(path.get(nextWaypoint).x , path.get(nextWaypoint).y);
             changingLane=false;
             if(nextWaypoint+1 < path.size){
                 if(nextWaypoint==1) {
@@ -232,5 +244,20 @@ public class Car extends Sprite{
 
     public void setLap(int lap) {
         this.lap = lap;
+    }
+
+    public boolean isOffTrack() {
+        return offTrack;
+    }
+
+    public void putInTrack(){
+        angle =(float) Math.atan2(path.get(nextWaypoint).y - getY()-getHeight()/2 , path.get(nextWaypoint).x - getX()-getWidth()/2);
+        driftAngle=0;
+        speed=0;
+        offTrack=false;
+    }
+
+    public void setAccelerating(boolean accelerating) {
+        this.accelerating = accelerating;
     }
 }

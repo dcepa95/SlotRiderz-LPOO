@@ -55,7 +55,7 @@ public class FollowWaypoints implements Screen {
         track=new Track();
 
 
-        sprite = new Sprite(new Texture("img/carGreen2.png"));
+        sprite = new Sprite(new Texture("img/carGreen.png"));
 
         sprite.setSize(11,33);
         sprite.setOriginCenter();
@@ -68,7 +68,7 @@ public class FollowWaypoints implements Screen {
 
         sprite = new Sprite(new Texture("img/carRed.png"));
 
-        sprite.setSize(15,30);
+        sprite.setSize(11,33);
         sprite.setOriginCenter();
         sprite.setCenter(track.getBeginningPos().x-25,track.getBeginningPos().y);
         cars.add(new Car(sprite, track.getTrack().get(1),camera,batch,sr));
@@ -76,7 +76,7 @@ public class FollowWaypoints implements Screen {
 
         sprite = new Sprite(new Texture("img/carBlue.png"));
 
-        sprite.setSize(15,30);
+        sprite.setSize(11,33);
         sprite.setOriginCenter();
         sprite.setCenter(track.getBeginningPos().x-50,track.getBeginningPos().y);
         cars.add(new Car(sprite, track.getTrack().get(2),camera,batch,sr));
@@ -84,7 +84,7 @@ public class FollowWaypoints implements Screen {
 
         sprite = new Sprite(new Texture("img/carBlack.png"));
 
-        sprite.setSize(15,30);
+        sprite.setSize(11,33);
         sprite.setOriginCenter();
         sprite.setCenter(track.getBeginningPos().x-75,track.getBeginningPos().y);
         cars.add(new Car(sprite, track.getTrack().get(3),camera,batch,sr));
