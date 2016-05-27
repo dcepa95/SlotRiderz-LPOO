@@ -15,6 +15,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.mygdx.game.Enteties.AI;
 import com.mygdx.game.Enteties.Car;
 import com.mygdx.game.Enteties.Player;
 import com.mygdx.game.Enteties.Track;
@@ -27,6 +28,7 @@ public class FollowWaypoints implements Screen {
     private Array<Car> cars;
     private Sprite sprite;
     private Player player;
+    private Array<AI> ais;
 
     private Box2DDebugRenderer debugRenderer;
     private OrthographicCamera camera;
@@ -62,6 +64,7 @@ public class FollowWaypoints implements Screen {
         sprite.setCenter(track.getBeginningPos().x,track.getBeginningPos().y);
         player = new Player(sprite,track.getTrack(),track.getCurvePoints(),0,new Vector2(track.getBeginningPos().x,track.getBeginningPos().y),camera,batch,sr);
 
+        ais = new Array<AI>();
         cars = new Array<Car>();
         cars.add(player.getCar());
         cars.get(0).setPos(1);
@@ -71,7 +74,8 @@ public class FollowWaypoints implements Screen {
         sprite.setSize(11,33);
         sprite.setOriginCenter();
         sprite.setCenter(track.getBeginningPos().x-25,track.getBeginningPos().y);
-        cars.add(new Car(sprite, track.getTrack().get(1),camera,batch,sr));
+        ais.add(new AI(sprite,track.getTrack(),track.getCurvePoints(),1,new Vector2(track.getBeginningPos().x-25,track.getBeginningPos().y),camera,batch,sr));
+        cars.add(ais.get(0).getCar());
         cars.get(1).setPos(2);
 
         sprite = new Sprite(new Texture("img/carBlue.png"));
@@ -79,7 +83,8 @@ public class FollowWaypoints implements Screen {
         sprite.setSize(11,33);
         sprite.setOriginCenter();
         sprite.setCenter(track.getBeginningPos().x-50,track.getBeginningPos().y);
-        cars.add(new Car(sprite, track.getTrack().get(2),camera,batch,sr));
+        ais.add(new AI(sprite,track.getTrack(),track.getCurvePoints(),2,new Vector2(track.getBeginningPos().x-50,track.getBeginningPos().y),camera,batch,sr));
+        cars.add(ais.get(1).getCar());
         cars.get(2).setPos(3);
 
         sprite = new Sprite(new Texture("img/carBlack.png"));
@@ -87,8 +92,9 @@ public class FollowWaypoints implements Screen {
         sprite.setSize(11,33);
         sprite.setOriginCenter();
         sprite.setCenter(track.getBeginningPos().x-75,track.getBeginningPos().y);
-        cars.add(new Car(sprite, track.getTrack().get(3),camera,batch,sr));
-        cars.get(3).setPos(4);
+        ais.add(new AI(sprite,track.getTrack(),track.getCurvePoints(),3,new Vector2(track.getBeginningPos().x-75,track.getBeginningPos().y),camera,batch,sr));
+        cars.add(ais.get(2).getCar());
+        cars.get(3).setPos(5);
     }
 
 
@@ -97,29 +103,12 @@ public class FollowWaypoints implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 
-        if(delta<=0.02f) {
-            //update player behaviour
-            player.update(delta);
-            int it = 0;
-            for (Car car : cars) {
-                if (it != 0) {
-                    car.updateSpeed(delta);
-                    car.update(delta,2);
-                }
-                it++;
-            }
-        }else{
-            //update player behaviour
-            player.update(0.01f);
-            int it = 0;
-            for (Car car : cars) {
-                if (it != 0) {
-                    car.updateSpeed(0.01f);
-                    car.update(0.01f,2);
-                }
-                it++;
-            }
+        //update player behaviour
+        player.update(delta);
+        for (AI car : ais) {
+            car.update(delta);
         }
+
 
         //draw the track
         sr.setColor(Color.WHITE);

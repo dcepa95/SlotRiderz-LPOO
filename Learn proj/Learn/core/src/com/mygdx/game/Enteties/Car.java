@@ -17,6 +17,7 @@ import com.badlogic.gdx.utils.Array;
  */
 public class Car extends Sprite{
     private Vector2 velocity = new Vector2();
+    private Vector2 accelerationVec = new Vector2();
     private float speed = 0;
     private float driftSpeed = 300;
     private float acceleration=500;
@@ -29,6 +30,7 @@ public class Car extends Sprite{
     private int inCurve=0;  //0 out, 1 right , 2 left
     private float angle;
     private float driftAngle=0;
+    private float previousCamAngle;
 
     private boolean accelerating=false;
 
@@ -58,6 +60,7 @@ public class Car extends Sprite{
         angle =(float) Math.atan2(path.get(nextWaypoint).y - getY()-getHeight()/2 , path.get(nextWaypoint).x - getX()-getWidth()/2);
         velocity.set( (float) Math.cos(angle)*speed , (float) Math.sin(angle)*speed );
         setCenter( getX() + getWidth()/2 + velocity.x * deltaTime , getY()+getHeight()/2 + velocity.y * deltaTime );
+        previousCamAngle=getRotation();
         //setOriginCenter();
         if(inCurve == 1) {
             if(accelerating) {
@@ -110,6 +113,7 @@ public class Car extends Sprite{
             setRotation(angle * MathUtils.radiansToDegrees - 90 - (driftAngle));
         }else
             setRotation(angle * MathUtils.radiansToDegrees - 90 - (driftAngle *(speed) / 500));
+        //rotate(angle*MathUtils.radiansToDegrees-getRotation()-90);
 
         if(isWaypointReached()){
             changingLane=false;
@@ -125,6 +129,7 @@ public class Car extends Sprite{
 
         if(pos==1) {
             camera.position.set(getX() + getWidth() / 2, getY() + getHeight() / 2, 0);
+            camera.rotate(angle*MathUtils.radiansToDegrees-90 -previousCamAngle);
         }
         //camera.rotate();
         camera.update();
@@ -143,47 +148,6 @@ public class Car extends Sprite{
 
     public int getWaypoint() {
         return nextWaypoint;
-    }
-
-    public void updateSpeed(float deltaTime) {
-        if(Gdx.input.isKeyPressed(Input.Keys.UP)) {
-
-            if (speed < maxSpeed) {
-                if(speed+acceleration*deltaTime>maxSpeed)
-                    speed=maxSpeed;
-                else
-                    speed+=acceleration*deltaTime;
-
-            }else{
-                speed=(float)maxSpeed;
-            }
-
-        }else if(Gdx.input.isTouched()) {
-
-            if (speed < maxSpeed) {
-                if(speed+acceleration*deltaTime>maxSpeed)
-                    speed=maxSpeed;
-                else
-                    speed+=acceleration*deltaTime;
-
-            }else{
-                speed=(float)maxSpeed;
-            }
-
-        }else{
-
-            if(speed>0){
-                if(speed-breaking*deltaTime<0)
-                    speed=0;
-                else
-                    speed-=breaking*deltaTime;
-            }else{
-                speed=0;
-            }
-        }
-
-
-
     }
 
     public void setPath(Array<Vector2> path){
