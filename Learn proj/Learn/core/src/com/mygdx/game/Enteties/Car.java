@@ -24,18 +24,21 @@ public class Car extends Sprite{
     private float breaking = 700;
     private int maxSpeed=700;
     private Array<Vector2> path;
-    private int nextWaypoint=0;
+    private int nextWaypoint=1;
+
     private int pos=0;
+
     private boolean changingLane=false;
     private int inCurve=0;  //0 out, 1 right , 2 left
     private float angle;
     private float driftAngle=0;
     private float previousCamAngle;
 
+    private int waypointsPassed=0;
+
     private boolean accelerating=false;
 
     private boolean offTrack=false;
-
     private int lap=0;
 
     private ShapeRenderer sr;
@@ -43,6 +46,7 @@ public class Car extends Sprite{
     private SpriteBatch batch;
 
     private OrthographicCamera camera;
+
     public Car(Sprite sprite, Array<Vector2> path, OrthographicCamera camera, SpriteBatch batch, ShapeRenderer sr){
         super(sprite);
         this.path=path;
@@ -50,6 +54,7 @@ public class Car extends Sprite{
         this.batch=batch;
         this.sr=sr;
     }
+
     @Override
     public void draw(Batch batch) {
         //update(Gdx.graphics.getDeltaTime());
@@ -116,6 +121,7 @@ public class Car extends Sprite{
         //rotate(angle*MathUtils.radiansToDegrees-getRotation()-90);
 
         if(isWaypointReached()){
+            waypointsPassed++;
             changingLane=false;
             if(nextWaypoint+1 < path.size){
                 if(nextWaypoint==1) {
@@ -127,21 +133,21 @@ public class Car extends Sprite{
             }
         }
 
+        /* //for Other game MOODE
         if(pos==1) {
             camera.position.set(getX() + getWidth() / 2, getY() + getHeight() / 2, 0);
-            camera.rotate(angle*MathUtils.radiansToDegrees-90 -previousCamAngle);
+            //camera.rotate(angle*MathUtils.radiansToDegrees-90 -previousCamAngle);
         }
         //camera.rotate();
         camera.update();
         batch.setProjectionMatrix(camera.combined);
         sr.setProjectionMatrix(camera.combined);
+        */
     }
-
     private boolean isWaypointReached() {
         //return Math.abs(path.get(nextWaypoint).x - getX()-getWidth()/2) <= speed*Gdx.graphics.getDeltaTime()  && Math.abs(path.get(nextWaypoint).y - getY()-getHeight()/2) <= speed*Gdx.graphics.getDeltaTime();
         return Math.sqrt(Math.pow(path.get(nextWaypoint).x - getX()-getWidth()/2,2) + Math.pow(path.get(nextWaypoint).y - getY()-getHeight()/2,2)) <= speed*Gdx.graphics.getDeltaTime();
     }
-
     public Array<Vector2> getPath(){
         return path;
     }
@@ -156,6 +162,10 @@ public class Car extends Sprite{
 
     public void setPos (int pos){
         this.pos=pos;
+    }
+
+    public int getPos() {
+        return pos;
     }
 
     public float getSpeed() {
@@ -223,5 +233,17 @@ public class Car extends Sprite{
 
     public void setAccelerating(boolean accelerating) {
         this.accelerating = accelerating;
+    }
+
+    public double getDistanceToWaypoint(){
+        return Math.sqrt(Math.pow(path.get(nextWaypoint).x - getX()-getWidth()/2,2) + Math.pow(path.get(nextWaypoint).y - getY()-getHeight()/2,2));
+    }
+
+    public int getWaypointsPassed() {
+        return waypointsPassed;
+    }
+
+    public void setWaypointsPassed(int waypointsPassed) {
+        this.waypointsPassed = waypointsPassed;
     }
 }

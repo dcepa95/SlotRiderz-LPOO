@@ -19,6 +19,9 @@ public class Player {
     private Array<Integer> curveRightPoints;
     private Array<Integer> curveLeftPoints;
     private float rejoinTime;
+    private ShapeRenderer sr;
+    private SpriteBatch batch;
+    private OrthographicCamera camera;
 
     public Player(Sprite sprite, Array<Array<Vector2> > tracks, Array<Array<Integer> > curves, int initialLane, Vector2 bPos, OrthographicCamera camera, SpriteBatch batch, ShapeRenderer sr){
         this.tracks=tracks;
@@ -26,6 +29,9 @@ public class Player {
         curveLeftPoints=curves.get(1);
         beginningPos=bPos;
         lane=initialLane;
+        this.camera=camera;
+        this.batch=batch;
+        this.sr=sr;
         car= new Car(sprite, tracks.get(lane), camera, batch, sr);
     }
 
@@ -76,6 +82,7 @@ public class Player {
                         car.setLap(car.getLap()+1);
                     }
                     car.setWaypoint((car.getWaypoint() + 3) % car.getPath().size);
+                    car.setWaypointsPassed(car.getWaypointsPassed()+2);
                     car.changeLane();
                 }
             } else if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
@@ -85,6 +92,7 @@ public class Player {
                         car.setLap(car.getLap()+1);
                     }
                     car.setWaypoint((car.getWaypoint() + 3) % car.getPath().size);
+                    car.setWaypointsPassed(car.getWaypointsPassed()+2);
                     car.changeLane();
                 }
             }
@@ -107,6 +115,12 @@ public class Player {
             car.setPath(tracks.get(lane));
             isInCurve();
             car.update(deltaTime, lane);
+            camera.position.set(car.getX() + car.getWidth() / 2, car.getY() + car.getHeight() / 2, 0);
+            //camera.rotate(angle*MathUtils.radiansToDegrees-90 -previousCamAngle);
+            //camera.rotate();
+            camera.update();
+            batch.setProjectionMatrix(camera.combined);
+            sr.setProjectionMatrix(camera.combined);
             rejoinTime=0;
         }else{
             car.setSpeed(car.getSpeed()*0.9f);
@@ -128,5 +142,9 @@ public class Player {
         if(rejoinTime>0.7f){
             car.putInTrack();
         }
+    }
+
+    public int getDistanceDrove(){
+        return car.getWaypointsPassed();
     }
 }

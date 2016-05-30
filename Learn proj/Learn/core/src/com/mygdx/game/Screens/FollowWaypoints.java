@@ -27,6 +27,8 @@ public class FollowWaypoints implements Screen {
     private SpriteBatch batch;
     private Array<Car> cars;
     private Sprite sprite;
+    private Sprite trackSprite;
+    private int trackHelper;
     private Player player;
     private Array<AI> ais;
 
@@ -94,7 +96,16 @@ public class FollowWaypoints implements Screen {
         sprite.setCenter(track.getBeginningPos().x-75,track.getBeginningPos().y);
         ais.add(new AI(sprite,track.getTrack(),track.getCurvePoints(),3,new Vector2(track.getBeginningPos().x-75,track.getBeginningPos().y),camera,batch,sr));
         cars.add(ais.get(2).getCar());
-        cars.get(3).setPos(5);
+        cars.get(3).setPos(4);
+
+        sprite = new Sprite(new Texture("img/finishLine.png"));
+        sprite.setSize(83,13);
+        sprite.setOriginCenter();
+        sprite.rotate90(true);
+        sprite.setCenter(track.getBeginningPos().x-38,track.getBeginningPos().y+10);
+
+        trackSprite = new Sprite(new Texture("img/trackPiece2.png"));
+        trackSprite.setOriginCenter();
     }
 
 
@@ -108,28 +119,36 @@ public class FollowWaypoints implements Screen {
         for (AI car : ais) {
             car.update(delta);
         }
-
+        updatePos();
 
         //draw the track
         sr.setColor(Color.WHITE);
         sr.begin(ShapeRenderer.ShapeType.Line);
+        trackHelper=0;
+        batch.begin();
+        track.draw(batch);
         for( Array<Vector2> path : track.getTrack()){
 
             previous = path.first();
 
             for(Vector2 waypoint : path){
-
-                sr.line(previous,waypoint);
+                if(trackHelper==0){
+                    trackSprite.setCenter(waypoint.x-38,waypoint.y);
+                    //trackSprite.draw(batch);
+                }
+                //sr.line(previous,waypoint);
                 previous=waypoint;
             }
-
-            sr.line(previous,path.first());
+            trackHelper++;
+            //sr.line(previous,path.first());
         }
+        batch.end();
         sr.end();
 
         //draw cars
         batch.begin();
-        player.getCar().draw(batch);
+        sprite.draw(batch);
+        //player.getCar().draw(batch);
         for(Car car : cars ){
             car.draw(batch);
         }
@@ -146,8 +165,13 @@ public class FollowWaypoints implements Screen {
 
         b2.begin();
         bitmapFont.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+        for(int i=0;i<cars.size;i++) {
+            bitmapFont.draw(b2, "Car " + Integer.toString(i + 1) + " -> waypoints: " + Integer.toString(cars.get(i).getWaypointsPassed()), 25, 400 - i * 25);
+            bitmapFont.draw(b2, "Car " + Integer.toString(i + 1) + " -> pos: " + Integer.toString(cars.get(i).getPos()), 25, 300 - i * 25);
+            bitmapFont.draw(b2, "Car " + Integer.toString(i + 1) + " -> lap: " + Integer.toString(cars.get(i).getLap()), 25, 200 - i * 25);
+        }
         bitmapFont.draw(b2,"fps: " + Integer.toString(Gdx.graphics.getFramesPerSecond()),25,100);
-        bitmapFont.draw(b2,"lap: " + Integer.toString(player.getLap()),25,75);
+        //bitmapFont.draw(b2,"lap: " + Integer.toString(player.getLap()),25,75);
         b2.end();
 
 
@@ -182,4 +206,22 @@ public class FollowWaypoints implements Screen {
         debugRenderer.dispose();
     }
 
+    private void updatePos() {
+        int pos;
+        for (int i = 0; i < cars.size; i++) {
+            pos=1;
+            for (int j = 0; j < cars.size; j++) {
+                if(i!=j) {
+                    if (cars.get(i).getWaypointsPassed() < cars.get(j).getWaypointsPassed()) {
+                        pos++;
+                    } else if (cars.get(i).getWaypointsPassed() == cars.get(j).getWaypointsPassed()) {
+                        if(cars.get(i).getDistanceToWaypoint() < cars.get(i).getDistanceToWaypoint()){
+                            pos++;
+                        }
+                    }
+                }
+            }
+            cars.get(i).setPos(pos);
+        }
+    }
 }

@@ -58,6 +58,7 @@ public class AI {
                         car.setLap(car.getLap()+1);
                     }
                     car.setWaypoint((car.getWaypoint() + 3) % car.getPath().size);
+                    car.setWaypointsPassed(car.getWaypointsPassed()+2);
                     car.changeLane();
                 }
             } else if (random==2) {
@@ -67,6 +68,7 @@ public class AI {
                         car.setLap(car.getLap()+1);
                     }
                     car.setWaypoint((car.getWaypoint() + 3) % car.getPath().size);
+                    car.setWaypointsPassed(car.getWaypointsPassed()+2);
                     car.changeLane();
                 }
             }
