@@ -96,6 +96,10 @@ public class Player {
                     car.changeLane();
                 }
             }
+
+            if(Gdx.input.getX() > 300 && Gdx.input.getX() < 350 && Gdx.input.getY() > -270 && Gdx.input.getY() < -220){
+
+            }
         }
     }
 
@@ -110,8 +114,8 @@ public class Player {
 
     public void update(float deltaTime){
         if(!car.isOffTrack()) {
-            updateCarSpeed(deltaTime);
-            updateLane();
+            //updateCarSpeed(deltaTime);
+            //updateLane();
             car.setPath(tracks.get(lane));
             isInCurve();
             car.update(deltaTime, lane);
@@ -146,5 +150,13 @@ public class Player {
 
     public int getDistanceDrove(){
         return car.getWaypointsPassed();
+    }
+
+    public int getLane(){
+        return lane;
+    }
+
+    public void setLane(int lane){
+        this.lane=lane;
     }
 }

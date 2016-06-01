@@ -21,7 +21,10 @@ public class Track {
     private int radius=105;
     private int counter=-1;
     private Sprite trackSprite;
-    private Sprite trackSpriteCurve;
+    private Sprite trackSpriteCurveRight;
+    private Sprite trackSpriteCurveLeft;
+    private int currentTrack=1;
+
 
     private void makeCurve(float cAngle, int direction, int points){
         float incAngle = cAngle/points;
@@ -200,14 +203,41 @@ public class Track {
         tracks.add(new Array<Vector2>());
         tracks.add(new Array<Vector2>());
         tracks.add(new Array<Vector2>());
-        makeLine(3,1);
+
+        curveRightPoints = new Array<Integer>();
+        curveLeftPoints = new Array<Integer>();
+
+        makeLine(9,1);
+        makeLine(9,1);
         makeCurve((float) 90*MathUtils.degreesToRadians,1,10);
-        makeLine(3,3);
-        makeCurve((float) 90*MathUtils.degreesToRadians,6,10);
-        makeLine(3,2);
-        makeCurve((float) 90*MathUtils.degreesToRadians,4,10);
-        makeLine(3,4);
+        makeLine(9,3);
+        makeCurve((float) 90*MathUtils.degreesToRadians,8,10);
+        makeCurve((float) 90*MathUtils.degreesToRadians,2,10);
         makeCurve((float) 90*MathUtils.degreesToRadians,7,10);
+        makeCurve((float) 90*MathUtils.degreesToRadians,1,10);
+        makeLine(9,3);
+        makeLine(9,3);
+        makeCurve((float) 90*MathUtils.degreesToRadians,6,10);
+        makeCurve((float) 90*MathUtils.degreesToRadians,4,10);
+        makeCurve((float) 90*MathUtils.degreesToRadians,5,10);
+        makeCurve((float) 90*MathUtils.degreesToRadians,3,10);
+        makeCurve((float) 90*MathUtils.degreesToRadians,8,10);
+        makeLine(9,1);
+        makeLine(9,1);
+        makeLine(9,1);
+        makeLine(9,1);
+        makeCurve((float) 90*MathUtils.degreesToRadians,2,10);
+        makeCurve((float) 90*MathUtils.degreesToRadians,7,10);
+        makeCurve((float) 90*MathUtils.degreesToRadians,1,10);
+       /* makeLine(8,4);
+        makeLine(8,4);
+        makeLine(8,4);
+        makeCurve((float) 90*MathUtils.degreesToRadians,5,10);
+        makeLine(8,2);
+        makeCurve((float) 90*MathUtils.degreesToRadians,3,10);
+        makeCurve((float) 90*MathUtils.degreesToRadians,8,10);
+        makeLine(8,1);
+        makeLine(7,1);*/
     }
 
     private void track3(){
@@ -247,6 +277,10 @@ public class Track {
     }
 
     public Track(){
+        trackSprite = new Sprite(new Texture("img/trackPiece1.png"));
+        trackSpriteCurveRight = new Sprite(new Texture("img/trackPiece3.png"));
+        trackSpriteCurveLeft = new Sprite(new Texture("img/trackPiece4.png"));
+
         track1();
     }
 
@@ -269,6 +303,7 @@ public class Track {
             case 4:
                 track4();
         }
+        currentTrack=number;
     }
 
     public Array<Array<Integer> > getCurvePoints() {
@@ -279,11 +314,18 @@ public class Track {
     }
 
     public void draw(SpriteBatch batch){
-        trackSprite = new Sprite(new Texture("img/trackPiece2.png"));
-        trackSpriteCurve = new Sprite(new Texture("img/trackPiece3.png"));
-        trackSpriteCurve.setOriginCenter();
+        trackSpriteCurveRight.setOriginCenter();
+        trackSpriteCurveLeft.setOriginCenter();
         trackSprite.setOriginCenter();
-        drawTrack1(batch);
+        switch(currentTrack){
+            case 1:
+                drawTrack1(batch);
+                break;
+            case 2:
+                drawTrack2(batch);
+                break;
+        }
+
     }
 
     public void drawTrack1(SpriteBatch batch){
@@ -301,146 +343,152 @@ public class Track {
         drawCurve((float) 90*MathUtils.degreesToRadians,3,10,batch);
         drawCurve((float) 90*MathUtils.degreesToRadians,8,10,batch);
         drawLine(8,1,batch);
-        drawLine(7,1,batch);
+        drawLine(10,1,batch);
+    }
+
+    public void drawTrack2(SpriteBatch batch){
+        currentPos = new Vector2((float) 200,(float) 200);
+        drawLine(9,1,batch);
+        drawLine(9,1,batch);
+        drawCurve((float) 90*MathUtils.degreesToRadians,1,10,batch);
+        drawLine(9,3,batch);
+        drawCurve((float) 90*MathUtils.degreesToRadians,8,10,batch);
+        drawCurve((float) 90*MathUtils.degreesToRadians,2,10,batch);
+        drawCurve((float) 90*MathUtils.degreesToRadians,7,10,batch);
+        drawCurve((float) 90*MathUtils.degreesToRadians,1,10,batch);
+        drawLine(9,3,batch);
+        drawLine(9,3,batch);
+        drawCurve((float) 90*MathUtils.degreesToRadians,6,10,batch);
+        drawCurve((float) 90*MathUtils.degreesToRadians,4,10,batch);
+        drawCurve((float) 90*MathUtils.degreesToRadians,5,10,batch);
+        drawCurve((float) 90*MathUtils.degreesToRadians,3,10,batch);
+        drawCurve((float) 90*MathUtils.degreesToRadians,8,10,batch);
+        drawLine(9,1,batch);
+        drawLine(9,1,batch);
+        drawLine(9,1,batch);
+        drawLine(9,1,batch);
+        drawCurve((float) 90*MathUtils.degreesToRadians,2,10,batch);
+        drawCurve((float) 90*MathUtils.degreesToRadians,7,10,batch);
+        drawCurve((float) 90*MathUtils.degreesToRadians,1,10,batch);
     }
 
     public void drawLine(int points, int type, SpriteBatch batch){
-        Vector2 finalPos = new Vector2();
         if (type == 1) { // up
             for (int i = 1; i < points; i++) {
-                trackSprite.setCenter(currentPos.x - 38, currentPos.y + i * 20);
+                trackSprite.setCenter(currentPos.x - 37.5f, currentPos.y + i * 20);
                 trackSprite.setRotation(0);
                 trackSprite.draw(batch);
             }
-            finalPos = new Vector2(currentPos.x, currentPos.y + (points - 1) * 20);
+            currentPos = new Vector2(currentPos.x, currentPos.y + (points - 1) * 20);
         } else if (type == 2) { // down
             for (int i = 1; i < points; i++) {
                 trackSprite.setCenter(currentPos.x + 38, currentPos.y - i * 20);
                 trackSprite.setRotation(0);
                 trackSprite.draw(batch);
             }
-            finalPos = new Vector2(currentPos.x, currentPos.y - (points - 1) * 20);
+            currentPos = new Vector2(currentPos.x, currentPos.y - (points - 1) * 20);
         } else if (type == 3) { // right
             for (int i = 1; i < points; i++) {
                 trackSprite.setCenter(currentPos.x + i * 20, currentPos.y+38);
                 trackSprite.setRotation(90);
                 trackSprite.draw(batch);
             }
-            finalPos = new Vector2(currentPos.x + (points - 1) * 20, currentPos.y);
+            currentPos = new Vector2(currentPos.x + (points - 1) * 20, currentPos.y);
         } else if (type == 4) { // left
             for (int i = 1; i < points; i++) {
                 trackSprite.setCenter(currentPos.x - i * 20, currentPos.y-38);
                 trackSprite.setRotation(90);
                 trackSprite.draw(batch);
             }
-            finalPos = new Vector2(currentPos.x - (points - 1) * 20, currentPos.y);
+            currentPos = new Vector2(currentPos.x - (points - 1) * 20, currentPos.y);
         }
-        currentPos=finalPos;
     }
 
     public void drawCurve(float cAngle, int direction, int points, SpriteBatch batch){
         float incAngle = cAngle/points;
-        float finalAngle = actualAngle + cAngle;
-        int initialRadius=radius;
+        //float finalAngle = actualAngle + cAngle;
         Vector2 temp;
         Vector2 inicialPos = currentPos;
-        Vector2 finalPos = new Vector2();
-        int it=0;
 
         if(direction == 2 || direction == 3 || direction == 5 || direction == 8){
             radius+=75;
-            initialRadius=radius;
         }
 
         currentPos = inicialPos;
         if (direction == 1) { //up and Right
-            Vector2 center = new Vector2(currentPos.x + initialRadius, currentPos.y);
-            for (float i = actualAngle + incAngle; i < finalAngle + incAngle; i += incAngle) {
-                temp = new Vector2(center.x - (float) (radius+39) * MathUtils.cos(i), center.y + (float) (radius+39) * MathUtils.sin(i));
-                trackSpriteCurve.setCenter(temp.x,temp.y);
-                trackSpriteCurve.setRotation(-i*MathUtils.radiansToDegrees);
-                trackSpriteCurve.draw(batch);
-                currentPos = new Vector2(center.x - (float) radius * MathUtils.cos(i), center.y + (float) radius * MathUtils.sin(i));;
+            Vector2 center = new Vector2(currentPos.x + radius, currentPos.y);
+            for (float i = actualAngle + incAngle; i < cAngle + incAngle; i += incAngle) {
+                temp = new Vector2(center.x - (float) (radius+37.5) * MathUtils.cos(i), center.y + (float) (radius+42) * MathUtils.sin(i));
+                trackSpriteCurveRight.setCenter(temp.x,temp.y);
+                trackSpriteCurveRight.setRotation(-i*MathUtils.radiansToDegrees);
+                trackSpriteCurveRight.draw(batch);
+                currentPos = new Vector2(center.x - (float) radius * MathUtils.cos(i), center.y + 4.4f + (float) radius * MathUtils.sin(i));
             }
-            radius += 25;
         } else if (direction == 2) { //up and Left
-            Vector2 center = new Vector2(currentPos.x - initialRadius, currentPos.y);
-            for (float i = actualAngle + incAngle; i < finalAngle + incAngle; i += incAngle) {
-                temp = new Vector2(center.x + (float) (radius+38) * MathUtils.cos(i), center.y + (float) (radius+38) * MathUtils.sin(i));
-                trackSprite.setCenter(temp.x,temp.y);
-                trackSprite.setRotation(i*MathUtils.radiansToDegrees);
-                trackSprite.draw(batch);
+            Vector2 center = new Vector2(currentPos.x - radius, currentPos.y);
+            for (float i = actualAngle + incAngle; i < cAngle + incAngle; i += incAngle) {
+                temp = new Vector2(center.x + (float) (radius-38) * MathUtils.cos(i), center.y + (float) (radius-38) * MathUtils.sin(i));
+                trackSpriteCurveLeft.setCenter(temp.x,temp.y);
+                trackSpriteCurveLeft.setRotation(i*MathUtils.radiansToDegrees);
+                trackSpriteCurveLeft.draw(batch);
                 currentPos = new Vector2(center.x + (float) radius * MathUtils.cos(i), center.y + (float) radius * MathUtils.sin(i));
             }
-            radius -= 25;
         } else if (direction == 3) { //down and Right
-            Vector2 center = new Vector2(currentPos.x + initialRadius, currentPos.y);
-            for (float i = actualAngle + incAngle; i < finalAngle + incAngle; i += incAngle) {
+            Vector2 center = new Vector2(currentPos.x + radius, currentPos.y);
+            for (float i = actualAngle + incAngle; i < cAngle + incAngle; i += incAngle) {
                 temp = new Vector2(center.x - (float) (radius-38) * MathUtils.cos(i), center.y - (float) (radius-38) * MathUtils.sin(i));
-                trackSprite.setCenter(temp.x,temp.y);
-                trackSprite.setRotation(i*MathUtils.radiansToDegrees);
-                trackSprite.draw(batch);
+                trackSpriteCurveLeft.setCenter(temp.x,temp.y);
+                trackSpriteCurveLeft.setRotation(180+i*MathUtils.radiansToDegrees);
+                trackSpriteCurveLeft.draw(batch);
                 currentPos = new Vector2(center.x - (float) radius * MathUtils.cos(i), center.y - (float) radius * MathUtils.sin(i));
             }
-            radius -= 25;
         } else if (direction == 4) { //down and Left
-            Vector2 center = new Vector2(currentPos.x - initialRadius, currentPos.y);
-            for (float i = actualAngle + incAngle; i < finalAngle + incAngle; i += incAngle) {
-                temp = new Vector2(center.x + (float) (radius+38) * MathUtils.cos(i), center.y - (float) (radius+38) * MathUtils.sin(i));
-                trackSprite.setCenter(temp.x,temp.y);
-                trackSprite.setRotation(-i*MathUtils.radiansToDegrees);
-                trackSprite.draw(batch);
-                currentPos = new Vector2(center.x + (float) radius * MathUtils.cos(i), center.y - (float) radius * MathUtils.sin(i));
+            Vector2 center = new Vector2(currentPos.x - radius, currentPos.y);
+            for (float i = actualAngle + incAngle; i < cAngle + incAngle; i += incAngle) {
+                temp = new Vector2(center.x + (float) (radius+43) * MathUtils.cos(i), center.y - (float) (radius+36.7) * MathUtils.sin(i));
+                trackSpriteCurveRight.setCenter(temp.x,temp.y);
+                trackSpriteCurveRight.setRotation(180-i*MathUtils.radiansToDegrees);
+                trackSpriteCurveRight.draw(batch);
+                currentPos = new Vector2(center.x + (float) radius * MathUtils.cos(i), center.y+1 - (float) radius * MathUtils.sin(i));
             }
-            radius += 25;
         } else if (direction == 5) { //Left and down
-            Vector2 center = new Vector2(currentPos.x, currentPos.y - initialRadius);
-            for (float i = actualAngle + incAngle; i < finalAngle + incAngle; i += incAngle) {
-                temp = new Vector2(center.x - (float) (radius-38) * MathUtils.sin(i), center.y + (float) (radius-38) * MathUtils.cos(i));
-                trackSprite.setCenter(temp.x,temp.y);
-                trackSprite.setRotation(90+i*MathUtils.radiansToDegrees);
-                trackSprite.draw(batch);
-                currentPos = new Vector2(center.x - (float) radius * MathUtils.sin(i), center.y + (float) radius * MathUtils.cos(i));
+            Vector2 center = new Vector2(currentPos.x, currentPos.y - radius);
+            for (float i = actualAngle + incAngle; i < cAngle + incAngle; i += incAngle) {
+                temp = new Vector2(center.x - (float) (radius-42.5) * MathUtils.sin(i), center.y + (float) (radius-38) * MathUtils.cos(i));
+                trackSpriteCurveLeft.setCenter(temp.x,temp.y);
+                trackSpriteCurveLeft.setRotation(90+i*MathUtils.radiansToDegrees);
+                trackSpriteCurveLeft.draw(batch);
+                currentPos = new Vector2(center.x + 4.1f - (float) radius * MathUtils.sin(i), center.y + (float) radius * MathUtils.cos(i));
             }
-            radius -= 25;
         } else if (direction == 6) { //Right and Down
-            Vector2 center = new Vector2(currentPos.x, currentPos.y - initialRadius);
-            for (float i = actualAngle + incAngle; i < finalAngle + incAngle; i += incAngle) {
-                temp = new Vector2(center.x + (float) (radius+38) * MathUtils.sin(i), center.y + (float) (radius+38) * MathUtils.cos(i));
-                trackSprite.setCenter(temp.x,temp.y);
-                trackSprite.setRotation(-90-i*MathUtils.radiansToDegrees);
-                trackSprite.draw(batch);
+            Vector2 center = new Vector2(currentPos.x, currentPos.y - radius);
+            for (float i = actualAngle + incAngle; i < cAngle + incAngle; i += incAngle) {
+                temp = new Vector2(center.x + (float) (radius+43) * MathUtils.sin(i), center.y + (float) (radius+38) * MathUtils.cos(i));
+                trackSpriteCurveRight.setCenter(temp.x,temp.y);
+                trackSpriteCurveRight.setRotation(-90-i*MathUtils.radiansToDegrees);
+                trackSpriteCurveRight.draw(batch);
                 currentPos = new Vector2(center.x + (float) radius * MathUtils.sin(i), center.y + (float) radius * MathUtils.cos(i));
             }
-            radius += 25;
         } else if (direction == 7) { //Left and up
-            Vector2 center = new Vector2(currentPos.x, currentPos.y + initialRadius);
-            for (float i = actualAngle + incAngle; i < finalAngle + incAngle; i += incAngle) {
+            Vector2 center = new Vector2(currentPos.x, currentPos.y + radius);
+            for (float i = actualAngle + incAngle; i < cAngle + incAngle; i += incAngle) {
                 temp = new Vector2(center.x - (float) (radius+38) * MathUtils.sin(i), center.y - (float) (radius+38) * MathUtils.cos(i));
-                trackSprite.setCenter(temp.x,temp.y);
-                trackSprite.setRotation(-i*MathUtils.radiansToDegrees);
-                trackSprite.draw(batch);
-                currentPos = new Vector2(center.x - (float) radius * MathUtils.sin(i), center.y - (float) radius * MathUtils.cos(i));
+                trackSpriteCurveRight.setCenter(temp.x,temp.y);
+                trackSpriteCurveRight.setRotation(90-i*MathUtils.radiansToDegrees);
+                trackSpriteCurveRight.draw(batch);
+                currentPos = new Vector2(center.x -0.5f  - (float) radius * MathUtils.sin(i), center.y -1.5f - (float) radius * MathUtils.cos(i));
             }
-            radius += 25;
         } else if (direction == 8) { //Right and up
-            Vector2 center = new Vector2(currentPos.x, currentPos.y + initialRadius);
-            for (float i = actualAngle + incAngle; i < finalAngle + incAngle; i += incAngle) {
-                temp = new Vector2(center.x + (float) (radius-38) * MathUtils.sin(i), center.y - (float) (radius-38) * MathUtils.cos(i));
-                trackSprite.setCenter(temp.x,temp.y);
-                trackSprite.setRotation(90+i*MathUtils.radiansToDegrees);
-                trackSprite.draw(batch);
-                currentPos = new Vector2(center.x + (float) radius * MathUtils.sin(i), center.y - (float) radius * MathUtils.cos(i));
+            Vector2 center = new Vector2(currentPos.x, currentPos.y + radius);
+            for (float i = actualAngle + incAngle; i < cAngle + incAngle; i += incAngle) {
+                temp = new Vector2(center.x + (float) (radius-37) * MathUtils.sin(i), center.y - (float) (radius-37) * MathUtils.cos(i));
+                trackSpriteCurveLeft.setCenter(temp.x,temp.y);
+                trackSpriteCurveLeft.setRotation(180+90+i*MathUtils.radiansToDegrees);
+                trackSpriteCurveLeft.draw(batch);
+                currentPos = new Vector2(center.x + 0.9f + (float) radius * MathUtils.sin(i), center.y - (float) radius * MathUtils.cos(i));
             }
-            radius -= 25;
         }
-        if (it == 0)
-            finalPos = currentPos;
-        //radius += 25;
-        it++;
-
         radius = 100;
-        currentPos=finalPos;
     }
 
 }
