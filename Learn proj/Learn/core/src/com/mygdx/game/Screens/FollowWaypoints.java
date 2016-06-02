@@ -7,9 +7,11 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -50,6 +52,37 @@ public class FollowWaypoints implements Screen {
     private Sprite pedal;
     private Vector3 input;
 
+    private Texture explosion;
+    private TextureRegion[] animatedExplosion;
+    private Animation animation;
+    private float explosionCounterCar1=0f;
+    private boolean collisionCar1 = false;
+    private float explosionCounterCar2=0f;
+    private boolean collisionCar2 = false;
+    private float explosionCounterCar3=0f;
+    private boolean collisionCar3 = false;
+    private float explosionCounterCar4=0f;
+    private boolean collisionCar4 = false;
+
+
+    public void createExplosion(){
+        explosion = new Texture("img/explosion.png");
+        TextureRegion[][] tmp = TextureRegion.split(explosion,explosion.getWidth()/8,explosion.getHeight()/9);
+        animatedExplosion=transformTo1D(tmp);
+        animation = new Animation(1f/60f,animatedExplosion);
+    }
+
+    public TextureRegion[] transformTo1D(TextureRegion[][] tmp){
+        TextureRegion[] walkFrames = new TextureRegion[72];
+        int index=0;
+        for(int i=0;i<9;i++){
+            for(int j=0;j<8;j++){
+                walkFrames[index]=tmp[i][j];
+                index++;
+            }
+        }
+        return walkFrames;
+    }
 
     @Override
     public void show() {
@@ -127,6 +160,8 @@ public class FollowWaypoints implements Screen {
         pedal = new Sprite(new Texture("img/pedal.png"));
         pedal.setSize(120,120);
         pedal.setPosition(-525,-275);
+
+        createExplosion();
     }
 
 
@@ -180,6 +215,7 @@ public class FollowWaypoints implements Screen {
         for(Car car : cars ){
             car.draw(batch);
         }
+        checkCarCollisions();
         batch.end();
 
 
@@ -294,6 +330,7 @@ public class FollowWaypoints implements Screen {
         }
 
         if(isTouched(pedal.getX(), pedal.getX()+pedal.getWidth(), pedal.getY(), pedal.getY()+pedal.getHeight())) {
+                pedal.setTexture(new Texture("img/pedalDown.png"));
                 player.getCar().setAccelerating(true);
                 if (player.getCar().getSpeed() < player.getCar().getMaxSpeed()) {
                     if(player.getCar().getSpeed()+player.getCar().getAcceleration()*deltaTime>player.getCar().getMaxSpeed())
@@ -305,6 +342,7 @@ public class FollowWaypoints implements Screen {
                     player.getCar().setSpeed((float)player.getCar().getMaxSpeed());
                 }
         }else{
+            pedal.setTexture(new Texture("img/pedal.png"));
             player.getCar().setAccelerating(false);
             if(player.getCar().getSpeed()>0){
                 if(player.getCar().getSpeed()*0.95f<0)
@@ -328,5 +366,88 @@ public class FollowWaypoints implements Screen {
             }
         }
         return false;
+    }
+
+    public void checkCarCollisions(){
+        for(int i=0;i<cars.size;i++){
+            for(int j=0;j<cars.size;j++){
+                if(j==i) continue;
+                if(cars.get(i).getHitBox().overlaps(cars.get(j).getHitBox())){
+                    if(cars.get(i).getSpeed()>cars.get(j).getSpeed()){
+                        switch(j){
+                            case 0:
+                                collisionCar1=true;
+                                break;
+                            case 1:
+                                collisionCar2=true;
+                                break;
+                            case 2:
+                                collisionCar3=true;
+                                break;
+                            case 3:
+                                collisionCar4=true;
+                                break;
+                        }
+                        //car(j) blow
+                    }else if(cars.get(i).getSpeed()<cars.get(j).getSpeed()){
+                        switch(i){
+                            case 0:
+                                collisionCar1=true;
+                                break;
+                            case 1:
+                                collisionCar2=true;
+                                break;
+                            case 2:
+                                collisionCar3=true;
+                                break;
+                            case 3:
+                                collisionCar4=true;
+                                break;
+                        }
+                        //car(i) blow
+                    }
+                }
+            }
+        }
+
+        if(collisionCar1){
+            cars.get(0).setSpeed(0);
+            explosionCounterCar1+=Gdx.graphics.getDeltaTime();
+            batch.draw(animation.getKeyFrame(explosionCounterCar1),cars.get(0).getX()-10,cars.get(0).getY()-11,35,45);
+            if(explosionCounterCar1 > 1){
+                collisionCar1 = false;
+                explosionCounterCar1=0f;
+            }
+        }
+
+        if(collisionCar2){
+            cars.get(1).setSpeed(0);
+            explosionCounterCar2+=Gdx.graphics.getDeltaTime();
+            batch.draw(animation.getKeyFrame(explosionCounterCar2),cars.get(1).getX()-10,cars.get(1).getY()-11,35,45);
+            if(explosionCounterCar2 > 1){
+                collisionCar2 = false;
+                explosionCounterCar2=0f;
+            }
+        }
+
+        if(collisionCar3){
+            cars.get(2).setSpeed(0);
+            explosionCounterCar3+=Gdx.graphics.getDeltaTime();
+            batch.draw(animation.getKeyFrame(explosionCounterCar3),cars.get(2).getX()-10,cars.get(2).getY()-11,35,45);
+            if(explosionCounterCar3 > 1){
+                collisionCar3 = false;
+                explosionCounterCar3=0f;
+            }
+        }
+
+        if(collisionCar4){
+            cars.get(3).setSpeed(0);
+            explosionCounterCar4+=Gdx.graphics.getDeltaTime();
+            batch.draw(animation.getKeyFrame(explosionCounterCar4),cars.get(3).getX()-10,cars.get(3).getY()-11,35,45);
+            if(explosionCounterCar4 > 1 ){
+                collisionCar4 = false;
+                explosionCounterCar4=0f;
+            }
+        }
     }
 }

@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
@@ -25,6 +26,7 @@ public class Car extends Sprite{
     private int maxSpeed=700;
     private Array<Vector2> path;
     private int nextWaypoint=1;
+    private Rectangle hitbox;
 
     private int pos=0;
 
@@ -32,7 +34,6 @@ public class Car extends Sprite{
     private int inCurve=0;  //0 out, 1 right , 2 left
     private float angle;
     private float driftAngle=0;
-    private float previousCamAngle;
 
     private int waypointsPassed=0;
 
@@ -53,6 +54,7 @@ public class Car extends Sprite{
         this.camera=camera;
         this.batch=batch;
         this.sr=sr;
+        hitbox=new Rectangle(getX(),getY(),getWidth(),getHeight()/3);
     }
 
     @Override
@@ -65,7 +67,6 @@ public class Car extends Sprite{
         angle =(float) Math.atan2(path.get(nextWaypoint).y - getY()-getHeight()/2 , path.get(nextWaypoint).x - getX()-getWidth()/2);
         velocity.set( (float) Math.cos(angle)*speed , (float) Math.sin(angle)*speed );
         setCenter( getX() + getWidth()/2 + velocity.x * deltaTime , getY()+getHeight()/2 + velocity.y * deltaTime );
-        previousCamAngle=getRotation();
         //setOriginCenter();
         if(inCurve == 1) {
             if(accelerating) {
@@ -118,7 +119,6 @@ public class Car extends Sprite{
             setRotation(angle * MathUtils.radiansToDegrees - 90 - (driftAngle));
         }else
             setRotation(angle * MathUtils.radiansToDegrees - 90 - (driftAngle *(speed) / 500));
-        //rotate(angle*MathUtils.radiansToDegrees-getRotation()-90);
 
         if(isWaypointReached()){
             waypointsPassed++;
@@ -133,16 +133,13 @@ public class Car extends Sprite{
             }
         }
 
+        hitbox.setPosition(getX(),getY());
+
         /* //for Other game MOODE
         if(pos==1) {
             camera.position.set(getX() + getWidth() / 2, getY() + getHeight() / 2, 0);
             //camera.rotate(angle*MathUtils.radiansToDegrees-90 -previousCamAngle);
-        }
-        //camera.rotate();
-        camera.update();
-        batch.setProjectionMatrix(camera.combined);
-        sr.setProjectionMatrix(camera.combined);
-        */
+        }*/
     }
     private boolean isWaypointReached() {
         //return Math.abs(path.get(nextWaypoint).x - getX()-getWidth()/2) <= speed*Gdx.graphics.getDeltaTime()  && Math.abs(path.get(nextWaypoint).y - getY()-getHeight()/2) <= speed*Gdx.graphics.getDeltaTime();
@@ -245,5 +242,9 @@ public class Car extends Sprite{
 
     public void setWaypointsPassed(int waypointsPassed) {
         this.waypointsPassed = waypointsPassed;
+    }
+
+    public Rectangle getHitBox(){
+        return hitbox;
     }
 }
