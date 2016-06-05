@@ -20,7 +20,7 @@ public class AI {
     private Array<Integer> curveRightPoints;
     private Array<Integer> curveLeftPoints;
     private float rejoinTime;
-    private float AImaxSpeed=700;
+    private float AImaxSpeed=500;
 
     public AI(Sprite sprite, Array<Array<Vector2> > tracks, Array<Array<Integer> > curves, int initialLane, Vector2 bPos, OrthographicCamera camera, SpriteBatch batch, ShapeRenderer sr){
         this.tracks=tracks;
@@ -34,14 +34,14 @@ public class AI {
     private void updateCarSpeed(float deltaTime) {
         //TODO change this to AI
             car.setAccelerating(true);
-            if (car.getSpeed() < AImaxSpeed) {
-                if(car.getSpeed() + car.getAcceleration()*deltaTime > AImaxSpeed)
-                    car.setSpeed(AImaxSpeed);
+            if (car.getSpeed() < car.getMaxSpeed()) {
+                if(car.getSpeed() + car.getAcceleration()*deltaTime > car.getMaxSpeed())
+                    car.setSpeed(car.getMaxSpeed());
                 else
                     car.setSpeed(car.getSpeed() + car.getAcceleration() * deltaTime);
 
             }else{
-                car.setSpeed(AImaxSpeed);
+                car.setSpeed(car.getMaxSpeed());
             }
     }
 

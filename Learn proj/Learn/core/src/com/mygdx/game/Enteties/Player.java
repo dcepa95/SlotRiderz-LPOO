@@ -113,15 +113,13 @@ public class Player {
     }
 
     public void update(float deltaTime){
-        if(!car.isOffTrack()) {
+        if(!car.isOffTrack() && !car.isExploding()) {
             //updateCarSpeed(deltaTime);
             //updateLane();
             car.setPath(tracks.get(lane));
             isInCurve();
             car.update(deltaTime, lane);
             camera.position.set(car.getX() + car.getWidth() / 2, car.getY() + car.getHeight() / 2, 0);
-            //camera.rotate(angle*MathUtils.radiansToDegrees-90 -previousCamAngle);
-            //camera.rotate();
             camera.update();
             batch.setProjectionMatrix(camera.combined);
             sr.setProjectionMatrix(camera.combined);

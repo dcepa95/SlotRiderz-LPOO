@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
@@ -24,6 +25,7 @@ public class Track {
     private Sprite trackSpriteCurveRight;
     private Sprite trackSpriteCurveLeft;
     private int currentTrack=1;
+    private Array<Rectangle> traps;
 
 
     private void makeCurve(float cAngle, int direction, int points){
@@ -328,7 +330,7 @@ public class Track {
 
     }
 
-    public void drawTrack1(SpriteBatch batch){
+    private void drawTrack1(SpriteBatch batch){
         currentPos = new Vector2((float) 200,(float) 200);
         drawLine(9,1,batch);
         drawCurve((float) 90*MathUtils.degreesToRadians,1,10,batch);
@@ -346,7 +348,7 @@ public class Track {
         drawLine(10,1,batch);
     }
 
-    public void drawTrack2(SpriteBatch batch){
+    private void drawTrack2(SpriteBatch batch){
         currentPos = new Vector2((float) 200,(float) 200);
         drawLine(9,1,batch);
         drawLine(9,1,batch);
@@ -372,7 +374,7 @@ public class Track {
         drawCurve((float) 90*MathUtils.degreesToRadians,1,10,batch);
     }
 
-    public void drawLine(int points, int type, SpriteBatch batch){
+    private void drawLine(int points, int type, SpriteBatch batch){
         if (type == 1) { // up
             for (int i = 1; i < points; i++) {
                 trackSprite.setCenter(currentPos.x - 37.5f, currentPos.y + i * 20);
@@ -404,7 +406,7 @@ public class Track {
         }
     }
 
-    public void drawCurve(float cAngle, int direction, int points, SpriteBatch batch){
+    private void drawCurve(float cAngle, int direction, int points, SpriteBatch batch){
         float incAngle = cAngle/points;
         //float finalAngle = actualAngle + cAngle;
         Vector2 temp;
@@ -491,4 +493,11 @@ public class Track {
         radius = 100;
     }
 
+    private void track1Traps(){
+        traps=new Array<Rectangle>();
+    }
+
+    public  Array<Rectangle> getTraps(){
+        return traps;
+    }
 }

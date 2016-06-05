@@ -23,7 +23,7 @@ public class Car extends Sprite{
     private float driftSpeed = 300;
     private float acceleration=500;
     private float breaking = 700;
-    private int maxSpeed=700;
+    private int maxSpeed=600;
     private Array<Vector2> path;
     private int nextWaypoint=1;
     private Rectangle hitbox;
@@ -40,6 +40,7 @@ public class Car extends Sprite{
     private boolean accelerating=false;
 
     private boolean offTrack=false;
+    private boolean exploding=false;
     private int lap=0;
 
     private ShapeRenderer sr;
@@ -60,7 +61,8 @@ public class Car extends Sprite{
     @Override
     public void draw(Batch batch) {
         //update(Gdx.graphics.getDeltaTime());
-        super.draw(batch);
+        if(!exploding)
+            super.draw(batch);
     }
 
     public void update(float deltaTime, int lane) {
@@ -109,7 +111,7 @@ public class Car extends Sprite{
         }else
             this.driftAngle *= 0.8f;
 
-        if(driftAngle>60 || driftAngle<-60){
+        if(driftAngle>50 || driftAngle<-50){
             offTrack=true;
             if(driftAngle>0)
                 driftAngle+=20;
@@ -141,10 +143,12 @@ public class Car extends Sprite{
             //camera.rotate(angle*MathUtils.radiansToDegrees-90 -previousCamAngle);
         }*/
     }
+
     private boolean isWaypointReached() {
         //return Math.abs(path.get(nextWaypoint).x - getX()-getWidth()/2) <= speed*Gdx.graphics.getDeltaTime()  && Math.abs(path.get(nextWaypoint).y - getY()-getHeight()/2) <= speed*Gdx.graphics.getDeltaTime();
         return Math.sqrt(Math.pow(path.get(nextWaypoint).x - getX()-getWidth()/2,2) + Math.pow(path.get(nextWaypoint).y - getY()-getHeight()/2,2)) <= speed*Gdx.graphics.getDeltaTime();
     }
+
     public Array<Vector2> getPath(){
         return path;
     }
@@ -246,5 +250,13 @@ public class Car extends Sprite{
 
     public Rectangle getHitBox(){
         return hitbox;
+    }
+
+    public void setExploding(boolean exploding){
+        this.exploding=exploding;
+    }
+
+    public boolean isExploding(){
+        return exploding;
     }
 }
