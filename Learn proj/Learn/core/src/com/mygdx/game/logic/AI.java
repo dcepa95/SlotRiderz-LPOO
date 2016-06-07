@@ -84,7 +84,7 @@ public class AI {
     }
 
     public void update(float deltaTime){
-        if(!car.isOffTrack()) {
+        if(!car.isOffTrack() && !car.isExploding()) {
             updateCarSpeed(deltaTime);
             updateLane();
             car.setPath(tracks.get(lane));

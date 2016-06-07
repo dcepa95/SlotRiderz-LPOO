@@ -41,8 +41,6 @@ public class Game {
     private TextureRegion[] animatedExplosion;
     private Animation animation;
     private Sprite aiSprite;
-    private Sprite trap;
-    private Polygon intersection;
 
     private boolean paused=false;
     private float resumeCounter=0;
@@ -106,17 +104,6 @@ public class Game {
         cars.add(ais.get(2).getCar());
         cars.get(3).setPos(4);
 
-        traps=new Array<Polygon>();
-
-        trap = new Sprite(new Texture("img/mine.png"));
-        trap.setSize(20,20);
-        trap.setCenter(370,465);
-        traps.add(new Polygon(new float[] {trap.getX(),trap.getY(),
-                trap.getX(),trap.getY()+trap.getHeight(),
-                trap.getX()+trap.getWidth(), trap.getY()+trap.getHeight(),
-                trap.getX()+trap.getWidth(), trap.getY()}));
-
-        intersection = new Polygon();
     }
 
     public void update(float deltaTime){
@@ -134,7 +121,6 @@ public class Game {
 
     public void draw(SpriteBatch batch){
         track.draw(batch);
-        trap.draw(batch);
         for(Car car:cars){
             car.draw(batch);
         }
@@ -268,6 +254,7 @@ public class Game {
             }
 
             for (int j = 0; j < traps.size; j++) {
+                System.out.printf("%d\n",cars.get(i).getWaypoint());
                 if (backCollision(cars.get(i).getFront(),traps.get(j))) {
                     switch (i) {
                         case 0:
@@ -355,7 +342,7 @@ public class Game {
         if(collisionCar2){
             cars.get(1).setSpeed(0);
             explosionCounterCar2+=Gdx.graphics.getDeltaTime();
-            batch.draw(animation.getKeyFrame(explosionCounterCar2),cars.get(1).getX()-10,cars.get(1).getY()-11,35,45);
+            batch.draw(animation.getKeyFrame(explosionCounterCar2),explosionPosition.get(1).x,explosionPosition.get(1).y,35,45);
             if(explosionCounterCar2 > 1){
                 cars.get(1).setExploding(false);
                 collisionCar2 = false;
@@ -365,10 +352,10 @@ public class Game {
 
         if(collisionCar3){
             cars.get(2).setSpeed(0);
-            cars.get(2).setExploding(false);
             explosionCounterCar3+=Gdx.graphics.getDeltaTime();
-            batch.draw(animation.getKeyFrame(explosionCounterCar3),cars.get(2).getX()-10,cars.get(2).getY()-11,35,45);
+            batch.draw(animation.getKeyFrame(explosionCounterCar3),explosionPosition.get(2).x,explosionPosition.get(2).y,35,45);
             if(explosionCounterCar3 > 1){
+                cars.get(2).setExploding(false);
                 collisionCar3 = false;
                 explosionCounterCar3=0f;
             }
@@ -376,10 +363,10 @@ public class Game {
 
         if(collisionCar4){
             cars.get(3).setSpeed(0);
-            cars.get(3).setExploding(false);
             explosionCounterCar4+=Gdx.graphics.getDeltaTime();
-            batch.draw(animation.getKeyFrame(explosionCounterCar4),cars.get(3).getX()-10,cars.get(3).getY()-11,35,45);
+            batch.draw(animation.getKeyFrame(explosionCounterCar4),explosionPosition.get(3).x,explosionPosition.get(3).y,35,45);
             if(explosionCounterCar4 > 1 ){
+                cars.get(3).setExploding(false);
                 collisionCar4 = false;
                 explosionCounterCar4=0f;
             }

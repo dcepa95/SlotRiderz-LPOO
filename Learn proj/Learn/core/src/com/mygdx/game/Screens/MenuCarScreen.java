@@ -35,6 +35,7 @@ public class MenuCarScreen implements Screen {
     private Sprite spriteCar2;
     private Sprite spriteCar3;
     private Sprite spriteCar4;
+    private Sprite spriteCar5;
     private Sprite currCar;
     private OrthographicCamera camera;
     private Vector3 input;
@@ -42,6 +43,7 @@ public class MenuCarScreen implements Screen {
     private boolean car2pressed=false;
     private boolean car3pressed=false;
     private boolean car4pressed=false;
+    private boolean car5pressed=false;
 
     Vector3 touchPos; // creates a vector3 object for our touch event
 
@@ -66,43 +68,50 @@ public class MenuCarScreen implements Screen {
     public void show() {
         camera = new OrthographicCamera(baseRes, baseRes*Gdx.graphics.getHeight()/Gdx.graphics.getWidth());
 
-        backgroundImage = new Sprite(new Texture("img/backgroundImage.png"));
+        backgroundImage = new Sprite(game.assets.get("img/backgroundImage.png",Texture.class));
         backgroundImage.setCenter(0,0);
-        nextButton = new Sprite(new Texture("img/rightArrow.png"));
-        nextButton.scale(0.00001f);
+        nextButton = new Sprite(game.assets.get("img/next.png",Texture.class));
+        nextButton.setSize(179.2f,64.6f);
         nextButton.setCenter(500,-255);
-        backButton = new Sprite(new Texture("img/leftArrow.png"));
-        backButton.scale(0.00001f);
+        backButton = new Sprite(game.assets.get("img/back.png",Texture.class));
+        backButton.setSize(179.2f,64.6f);
         backButton.setCenter(-500,-255);
 
 
-        //selectACar = new Sprite(new Texture("img/SELECTCAR.png"));
+        selectACar = new Sprite(game.assets.get("img/carSelect.png",Texture.class));
+        selectACar.setScale(0.5f);
+        selectACar.setCenter(0,290);
         batch = new SpriteBatch();
 
-        spriteCar1 = new Sprite(new Texture("img/carBlue.png"));
-        spriteCar1.setOriginCenter();
+        spriteCar1 = new Sprite(game.assets.get("img/carBlue.png",Texture.class));
+        spriteCar1.setOrigin(spriteCar1.getWidth()/2,spriteCar1.getHeight()/3);
         spriteCar1.setSize(SMALLCAR_WIDTH, SMALLCAR_HEIGHT);
-        spriteCar1.setCenter(300,300);
+        spriteCar1.setCenter(300,200);
 
-        spriteCar2 = new Sprite(new Texture("img/carRed.png"));
-        spriteCar2.setOriginCenter();
+        spriteCar2 = new Sprite(game.assets.get("img/carRed.png",Texture.class));
+        spriteCar2.setOrigin(spriteCar2.getWidth()/2,spriteCar2.getHeight()/3);
         spriteCar2.setSize(SMALLCAR_WIDTH, SMALLCAR_HEIGHT);
-        spriteCar2.setCenter(300,200);
+        spriteCar2.setCenter(300,120);
 
-        spriteCar3 = new Sprite(new Texture("img/carGreen.png"));
-        spriteCar3.setOriginCenter();
+        spriteCar3 = new Sprite(game.assets.get("img/carGreen.png",Texture.class));
+        spriteCar3.setOrigin(spriteCar3.getWidth()/2,spriteCar3.getHeight()/3);
         spriteCar3.setSize(SMALLCAR_WIDTH, SMALLCAR_HEIGHT);
-        spriteCar3.setCenter(300,100);
+        spriteCar3.setCenter(300,40);
 
-        spriteCar4 = new Sprite(new Texture("img/carBlack.png"));
-        spriteCar4.setOriginCenter();
+        spriteCar4 = new Sprite(game.assets.get("img/carBlack.png",Texture.class));
+        spriteCar4.setOrigin(spriteCar4.getWidth()/2,spriteCar4.getHeight()/3);
         spriteCar4.setSize(SMALLCAR_WIDTH, SMALLCAR_HEIGHT);
-        spriteCar4.setCenter(300,0);
+        spriteCar4.setCenter(300,-40);
 
-        currCar = new Sprite(new Texture("img/carBlue.png"));
+        spriteCar5 = new Sprite(game.assets.get("img/carYellow.png",Texture.class));
+        spriteCar5.setOrigin(spriteCar5.getWidth()/2,spriteCar5.getHeight()/3);
+        spriteCar5.setSize(SMALLCAR_WIDTH, SMALLCAR_HEIGHT);
+        spriteCar5.setCenter(300,-120);
+
+        currCar = new Sprite(spriteCar1.getTexture());
         currCar.setSize(DISPLAYCAR_WIDTH, DISPLAYCAR_HEIGHT);
-        currCar.setOriginCenter();
-        currCar.setCenter(-300,100);
+        currCar.setOrigin(currCar.getWidth()/2,currCar.getHeight()/3);
+        currCar.setCenter(-300,50);
 
         input = new Vector3();
     }
@@ -115,6 +124,7 @@ public class MenuCarScreen implements Screen {
         backgroundImage.draw(batch);
         nextButton.draw(batch);
         backButton.draw(batch);
+        selectACar.draw(batch);
         //touch next button
         if(isTouched(nextButton.getX(),nextButton.getX()+nextButton.getWidth(),nextButton.getY(),nextButton.getY()+nextButton.getHeight())){
             game.setScreen(new MenuTrackScreen(game,currCar));
@@ -125,36 +135,49 @@ public class MenuCarScreen implements Screen {
         }
 
         //touch car 1
-        if(isTouched(spriteCar1.getX(),spriteCar1.getX()+spriteCar1.getWidth(),spriteCar1.getY(),spriteCar1.getY()+spriteCar1.getHeight())){
+        if(isTouched(spriteCar1.getX(),spriteCar1.getX()+spriteCar1.getWidth(),spriteCar1.getY(),spriteCar1.getY()+spriteCar1.getHeight()/3*2)){
             car1pressed=true;
             car2pressed=false;
             car3pressed=false;
             car4pressed=false;
+            car5pressed=false;
             currCar.setTexture(spriteCar1.getTexture());
         }
         //touch car 2
-        if(isTouched(spriteCar2.getX(),spriteCar2.getX()+spriteCar2.getWidth(),spriteCar2.getY(),spriteCar2.getY()+spriteCar2.getHeight())){
+        if(isTouched(spriteCar2.getX(),spriteCar2.getX()+spriteCar2.getWidth(),spriteCar2.getY(),spriteCar2.getY()+spriteCar2.getHeight()/3*2)){
             car1pressed=false;
             car2pressed=true;
             car3pressed=false;
             car4pressed=false;
+            car5pressed=false;
             currCar.setTexture(spriteCar2.getTexture());
         }
         //touch car 3
-        if(isTouched(spriteCar3.getX(),spriteCar3.getX()+spriteCar3.getWidth(),spriteCar3.getY(),spriteCar3.getY()+spriteCar3.getHeight())){
+        if(isTouched(spriteCar3.getX(),spriteCar3.getX()+spriteCar3.getWidth(),spriteCar3.getY(),spriteCar3.getY()+spriteCar3.getHeight()/3*2)){
             car1pressed=false;
             car2pressed=false;
             car3pressed=true;
             car4pressed=false;
+            car5pressed=false;
             currCar.setTexture(spriteCar3.getTexture());
         }
-        //touch car 2
-        if(isTouched(spriteCar4.getX(),spriteCar4.getX()+spriteCar4.getWidth(),spriteCar4.getY(),spriteCar4.getY()+spriteCar4.getHeight())){
+        //touch car 4
+        if(isTouched(spriteCar4.getX(),spriteCar4.getX()+spriteCar4.getWidth(),spriteCar4.getY(),spriteCar4.getY()+spriteCar4.getHeight()/3*2)){
             car1pressed=false;
             car2pressed=false;
             car3pressed=false;
             car4pressed=true;
+            car5pressed=false;
             currCar.setTexture(spriteCar4.getTexture());
+        }
+        //touch car 5
+        if(isTouched(spriteCar5.getX(),spriteCar5.getX()+spriteCar5.getWidth(),spriteCar5.getY(),spriteCar5.getY()+spriteCar5.getHeight()/3*2)){
+            car1pressed=false;
+            car2pressed=false;
+            car3pressed=false;
+            car4pressed=false;
+            car5pressed=true;
+            currCar.setTexture(spriteCar5.getTexture());
         }
 
         if(car1pressed)
@@ -177,10 +200,16 @@ public class MenuCarScreen implements Screen {
         else
             spriteCar4.setRotation(0);
 
+        if(car5pressed)
+            spriteCar5.rotate(10*Gdx.graphics.getDeltaTime());
+        else
+            spriteCar5.setRotation(0);
+
         spriteCar1.draw(batch);
         spriteCar2.draw(batch);
         spriteCar3.draw(batch);
         spriteCar4.draw(batch);
+        spriteCar5.draw(batch);
         currCar.rotate(10*Gdx.graphics.getDeltaTime());
         currCar.draw(batch);
         batch.end();

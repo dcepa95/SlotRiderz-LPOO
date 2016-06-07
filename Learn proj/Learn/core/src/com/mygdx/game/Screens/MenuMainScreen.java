@@ -22,24 +22,24 @@ public class MenuMainScreen implements Screen {
     private static final int SETTINGS_BUTTON_HEIGHT = 150;
     private static final int SETTINGS_BUTTON_Y = 100;
 
-    MyGdxGame game;
-    Texture singlePlayerButtonActive;
-    Texture singlePlayerButtonInactive;
+    private MyGdxGame game;
+    private Texture singlePlayerButtonActive;
+    private Texture singlePlayerButtonInactive;
     //Texture multiPlayerButtonActive;
     //Texture multiPlayerButtonInactive;
-    Texture settingsButtonActive;
-    Texture settingsButtonInactive;
-    Texture backgroundMenuImage;
+    private Texture settingsButtonActive;
+    private Texture settingsButtonInactive;
+    private Texture backgroundMenuImage;
 
     public MenuMainScreen(MyGdxGame game) {
         this.game = game;
-        singlePlayerButtonActive = new Texture("img/singlePlayerButtonActive.png");
-        singlePlayerButtonInactive  = new Texture("img/singlePlayerButtonInactive.png");
+        singlePlayerButtonActive = this.game.assets.get("img/singlePlayerDown.png");
+        singlePlayerButtonInactive  = this.game.assets.get("img/singleplayer.png");
         //multiPlayerButtonActive = new Texture()
         //multiPlayerButtonInactive  = new Texture()
-        settingsButtonActive  = new Texture("img/settingsButtonActive.png");
-        settingsButtonInactive  = new Texture("img/settingsButtonInactive.png");
-        backgroundMenuImage = new Texture("img/backgroundMenuImage2.png");
+        settingsButtonActive  = this.game.assets.get("img/settingsButtonActive.png");
+        settingsButtonInactive  = this.game.assets.get("img/settingsButtonInactive.png");
+        backgroundMenuImage = this.game.assets.get("img/backgroundMenuImage2.png");
     }
 
     @Override

@@ -5,9 +5,10 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Polygon;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.mygdx.game.MyGdxGame;
+
 
 /**
  * Created by digbe on 10/05/2016.
@@ -25,10 +26,28 @@ public class Track {
     private Sprite trackSprite;
     private Sprite trackSpriteCurveRight;
     private Sprite trackSpriteCurveLeft;
+    private Sprite cross;
     private int currentTrack=1;
     private Array<Polygon> traps;
+    private Array<Sprite> trapSprite;
     private int laps;
+    private Vector2 temp;
+    private Vector2 center;
+    private Sprite finish;
 
+
+    public Track(MyGdxGame app){
+        trackSprite = new Sprite(app.assets.get("img/trackPiece1.png",Texture.class));
+        trackSpriteCurveRight = new Sprite(app.assets.get("img/trackPiece3.png",Texture.class));
+        trackSpriteCurveLeft = new Sprite(app.assets.get("img/trackPiece4.png",Texture.class));
+        cross = new Sprite(app.assets.get("img/cross.png",Texture.class));
+        center=new Vector2();
+        temp = new Vector2();
+        finish = new Sprite(app.assets.get("img/finishLine.png", Texture.class));
+        finish.setOriginCenter();
+        finish.setCenter(beginningPos.x - 37.5f, beginningPos.y + 9);
+        track1(app);
+    }
 
     private void makeCurve(float cAngle, int direction, int points){
         float incAngle = cAngle/points;
@@ -175,7 +194,7 @@ public class Track {
         }
     }
 
-    private void track1(){
+    private void track1(MyGdxGame app){
         tracks = new Array<Array<Vector2> >();
         tracks.add(new Array<Vector2>());
         tracks.add(new Array<Vector2>());
@@ -200,6 +219,8 @@ public class Track {
         makeCurve((float) 90*MathUtils.degreesToRadians,8,10);
         makeLine(8,1);
         makeLine(7,1);
+        track1Traps(app);
+        cross.setCenter(162.5f,227.5f);
     }
 
     private void track2(){
@@ -281,14 +302,6 @@ public class Track {
         makeCurve((float) 90*MathUtils.degreesToRadians,7,10);
     }
 
-    public Track(){
-        trackSprite = new Sprite(new Texture("img/trackPiece1.png"));
-        trackSpriteCurveRight = new Sprite(new Texture("img/trackPiece3.png"));
-        trackSpriteCurveLeft = new Sprite(new Texture("img/trackPiece4.png"));
-
-        track1();
-    }
-
     public Array<Array<Vector2>> getTrack() {
         return tracks;
     }
@@ -297,10 +310,10 @@ public class Track {
         return beginningPos;
     }
 
-    public void setTrack(int number){
+    public void setTrack(int number, MyGdxGame app){
         switch(number){
             case 1:
-                track1();
+                track1(app);
             case 2:
                 track2();
             case 3:
@@ -349,6 +362,9 @@ public class Track {
         drawCurve((float) 90*MathUtils.degreesToRadians,8,10,batch);
         drawLine(8,1,batch);
         drawLine(10,1,batch);
+        cross.draw(batch);
+        drawTraps(batch);
+        finish.draw(batch);
     }
 
     private void drawTrack2(SpriteBatch batch){
@@ -412,79 +428,78 @@ public class Track {
     private void drawCurve(float cAngle, int direction, int points, SpriteBatch batch){
         float incAngle = cAngle/points;
         //float finalAngle = actualAngle + cAngle;
-        Vector2 temp;
 
         if(direction == 2 || direction == 3 || direction == 5 || direction == 8){
             radius+=75;
         }
 
         if (direction == 1) { //up and Right
-            Vector2 center = new Vector2(currentPos.x + radius, currentPos.y);
+            center.set(currentPos.x + radius, currentPos.y);
             for (float i = actualAngle + incAngle; i < cAngle + incAngle; i += incAngle) {
-                temp = new Vector2(center.x - (float) (radius+37.5) * MathUtils.cos(i), center.y + (float) (radius+42) * MathUtils.sin(i));
+                temp.set(center.x - (float) (radius+37.5) * MathUtils.cos(i), center.y + (float) (radius+42) * MathUtils.sin(i));
                 trackSpriteCurveRight.setCenter(temp.x,temp.y);
                 trackSpriteCurveRight.setRotation(-i*MathUtils.radiansToDegrees);
                 trackSpriteCurveRight.draw(batch);
                 currentPos.set(center.x - (float) radius * MathUtils.cos(i), center.y + 4.4f + (float) radius * MathUtils.sin(i));
             }
         } else if (direction == 2) { //up and Left
-            Vector2 center = new Vector2(currentPos.x - radius, currentPos.y);
+            center.set(currentPos.x - radius, currentPos.y);
             for (float i = actualAngle + incAngle; i < cAngle + incAngle; i += incAngle) {
-                temp = new Vector2(center.x + (float) (radius-38) * MathUtils.cos(i), center.y + (float) (radius-38) * MathUtils.sin(i));
+                temp.set(center.x + (float) (radius-38) * MathUtils.cos(i), center.y + (float) (radius-38) * MathUtils.sin(i));
                 trackSpriteCurveLeft.setCenter(temp.x,temp.y);
                 trackSpriteCurveLeft.setRotation(i*MathUtils.radiansToDegrees);
                 trackSpriteCurveLeft.draw(batch);
                 currentPos.set(center.x + (float) radius * MathUtils.cos(i), center.y + (float) radius * MathUtils.sin(i));
             }
         } else if (direction == 3) { //down and Right
-            Vector2 center = new Vector2(currentPos.x + radius, currentPos.y);
+            center.set(currentPos.x + radius, currentPos.y);
             for (float i = actualAngle + incAngle; i < cAngle + incAngle; i += incAngle) {
-                temp = new Vector2(center.x - (float) (radius-38) * MathUtils.cos(i), center.y - (float) (radius-38) * MathUtils.sin(i));
+                temp.set(center.x - (float) (radius-38) * MathUtils.cos(i), center.y - (float) (radius-38) * MathUtils.sin(i));
                 trackSpriteCurveLeft.setCenter(temp.x,temp.y);
                 trackSpriteCurveLeft.setRotation(180+i*MathUtils.radiansToDegrees);
                 trackSpriteCurveLeft.draw(batch);
                 currentPos.set(center.x - (float) radius * MathUtils.cos(i), center.y - (float) radius * MathUtils.sin(i));
             }
         } else if (direction == 4) { //down and Left
-            Vector2 center = new Vector2(currentPos.x - radius, currentPos.y);
+            center.set(currentPos.x - radius, currentPos.y);
             for (float i = actualAngle + incAngle; i < cAngle + incAngle; i += incAngle) {
-                temp = new Vector2(center.x + (float) (radius+43) * MathUtils.cos(i), center.y - (float) (radius+36.7) * MathUtils.sin(i));
+                temp.set(center.x + (float) (radius+43) * MathUtils.cos(i), center.y - (float) (radius+36.7) * MathUtils.sin(i));
                 trackSpriteCurveRight.setCenter(temp.x,temp.y);
                 trackSpriteCurveRight.setRotation(180-i*MathUtils.radiansToDegrees);
                 trackSpriteCurveRight.draw(batch);
                 currentPos.set(center.x + (float) radius * MathUtils.cos(i), center.y+1 - (float) radius * MathUtils.sin(i));
             }
         } else if (direction == 5) { //Left and down
-            Vector2 center = new Vector2(currentPos.x, currentPos.y - radius);
+            center.set(currentPos.x, currentPos.y - radius);
             for (float i = actualAngle + incAngle; i < cAngle + incAngle; i += incAngle) {
-                temp = new Vector2(center.x - (float) (radius-42.5) * MathUtils.sin(i), center.y + (float) (radius-38) * MathUtils.cos(i));
+                temp.set(center.x - (float) (radius-42.5) * MathUtils.sin(i), center.y + (float) (radius-38) * MathUtils.cos(i));
                 trackSpriteCurveLeft.setCenter(temp.x,temp.y);
                 trackSpriteCurveLeft.setRotation(90+i*MathUtils.radiansToDegrees);
                 trackSpriteCurveLeft.draw(batch);
                 currentPos.set(center.x + 4.1f - (float) radius * MathUtils.sin(i), center.y + (float) radius * MathUtils.cos(i));
             }
         } else if (direction == 6) { //Right and Down
-            Vector2 center = new Vector2(currentPos.x, currentPos.y - radius);
+            center.set(currentPos.x, currentPos.y - radius);
             for (float i = actualAngle + incAngle; i < cAngle + incAngle; i += incAngle) {
-                temp = new Vector2(center.x + (float) (radius+43) * MathUtils.sin(i), center.y + (float) (radius+38) * MathUtils.cos(i));
+                temp.set(center.x + (float) (radius+43) * MathUtils.sin(i), center.y + (float) (radius+38) * MathUtils.cos(i));
                 trackSpriteCurveRight.setCenter(temp.x,temp.y);
                 trackSpriteCurveRight.setRotation(-90-i*MathUtils.radiansToDegrees);
                 trackSpriteCurveRight.draw(batch);
                 currentPos.set(center.x + (float) radius * MathUtils.sin(i), center.y + (float) radius * MathUtils.cos(i));
             }
         } else if (direction == 7) { //Left and up
-            Vector2 center = new Vector2(currentPos.x, currentPos.y + radius);
+            center.set(currentPos.x, currentPos.y + radius);
             for (float i = actualAngle + incAngle; i < cAngle + incAngle; i += incAngle) {
-                temp = new Vector2(center.x - (float) (radius+38) * MathUtils.sin(i), center.y - (float) (radius+38) * MathUtils.cos(i));
+                temp.set(center.x - (float) (radius+38) * MathUtils.sin(i), center.y - (float) (radius+38) * MathUtils.cos(i));
                 trackSpriteCurveRight.setCenter(temp.x,temp.y);
                 trackSpriteCurveRight.setRotation(90-i*MathUtils.radiansToDegrees);
                 trackSpriteCurveRight.draw(batch);
                 currentPos.set(center.x -0.5f  - (float) radius * MathUtils.sin(i), center.y -1.5f - (float) radius * MathUtils.cos(i));
             }
         } else if (direction == 8) { //Right and up
-            Vector2 center = new Vector2(currentPos.x, currentPos.y + radius);
+            center.set(currentPos.x, currentPos.y + radius);
             for (float i = actualAngle + incAngle; i < cAngle + incAngle; i += incAngle) {
-                temp = new Vector2(center.x + (float) (radius-37) * MathUtils.sin(i), center.y - (float) (radius-37) * MathUtils.cos(i));
+                temp.set(center.x + (float) (radius-37) * MathUtils.sin(i), center.y - (float) (radius-37) * MathUtils.cos(i));
                 trackSpriteCurveLeft.setCenter(temp.x,temp.y);
                 trackSpriteCurveLeft.setRotation(180+90+i*MathUtils.radiansToDegrees);
                 trackSpriteCurveLeft.draw(batch);
@@ -494,8 +509,35 @@ public class Track {
         radius = 100;
     }
 
-    private void track1Traps(){
+    private void track1Traps(MyGdxGame app){
         traps=new Array<Polygon>();
+        trapSprite = new Array<Sprite>();
+        trapSprite.add(new Sprite(app.assets.get("img/mine.png",Texture.class)));
+        trapSprite.get(0).setSize(20,20);
+        trapSprite.get(0).setCenter(370,465);
+        trapSprite.add(new Sprite(app.assets.get("img/mine.png",Texture.class)));
+        trapSprite.get(1).setSize(20,20);
+        trapSprite.get(1).setCenter(250,240);
+        trapSprite.add(new Sprite(app.assets.get("img/mine.png",Texture.class)));
+        trapSprite.get(2).setSize(20,20);
+        trapSprite.get(2).setCenter(-100,0);
+        trapSprite.add(new Sprite(app.assets.get("img/mine.png",Texture.class)));
+        trapSprite.get(3).setSize(20,20);
+        trapSprite.get(3).setCenter(175,100);
+
+        for(int i=0;i<trapSprite.size;i++){
+            traps.add(new Polygon(new float[] {trapSprite.get(i).getX(),trapSprite.get(i).getY(),
+                    trapSprite.get(i).getX(),trapSprite.get(i).getY()+trapSprite.get(i).getHeight(),
+                    trapSprite.get(i).getX()+trapSprite.get(i).getWidth(), trapSprite.get(i).getY()+trapSprite.get(i).getHeight(),
+                    trapSprite.get(i).getX()+trapSprite.get(i).getWidth(), trapSprite.get(i).getY()}));
+        }
+
+    }
+
+    private void drawTraps(SpriteBatch batch){
+        for(Sprite s: trapSprite){
+            s.draw(batch);
+        }
     }
 
     public  Array<Polygon> getTraps(){

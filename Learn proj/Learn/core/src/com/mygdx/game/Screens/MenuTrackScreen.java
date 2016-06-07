@@ -44,22 +44,22 @@ public class MenuTrackScreen implements Screen {
     public void show() {
         camera = new OrthographicCamera(baseRes,baseRes*Gdx.graphics.getHeight()/Gdx.graphics.getWidth());
         batch = new SpriteBatch();
-        backgroundImage = new Sprite(new Texture("img/backgroundImage.png"));
+        backgroundImage = new Sprite(game.assets.get("img/backgroundImage.png",Texture.class));
         backgroundImage.setOriginCenter();
         backgroundImage.setCenter(0,0);
-        nextButton = new Sprite(new Texture("img/next.png"));
-        nextButton.setScale(0.1f);
+        nextButton = new Sprite(game.assets.get("img/next.png",Texture.class));
+        nextButton.setSize(179.2f,64.6f);
         nextButton.setCenter(500,-255);
-        backButton = new Sprite(new Texture("img/leftArrow.png"));
-        backButton.setScale(0.2f);
+        backButton = new Sprite(game.assets.get("img/back.png",Texture.class));
+        backButton.setSize(179.2f,64.6f);
         backButton.setCenter(-500,-255);
 
 
-        track1Button = new Sprite(new Texture("img/track1.png"));
-        track1Button.scale(0.00001f);
+        track1Button = new Sprite(game.assets.get("img/track1.png",Texture.class));
+        track1Button.setScale(0.1f);
         track1Button.setCenter(300,200);
-        track2Button = new Sprite (new Texture("img/track2.png"));
-        track2Button.scale(0.00001f);
+        track2Button = new Sprite (game.assets.get("img/track2.png",Texture.class));
+        track2Button.setScale(0.1f);
         track2Button.setCenter(300,-25);
 
         input=new Vector3();
@@ -80,7 +80,7 @@ public class MenuTrackScreen implements Screen {
 
         //touch next button
         if(isTouched(nextButton.getX(),nextButton.getX()+nextButton.getWidth(),nextButton.getY(),nextButton.getY()+nextButton.getHeight())){
-            game.setScreen(new FollowWaypoints(game,currCar,new Track()));
+            game.setScreen(new FollowWaypoints(game,currCar,new Track(game)));
         }
         //touch back button
         if(isTouched(backButton.getX(),backButton.getX()+backButton.getWidth(),backButton.getY(),backButton.getY()+backButton.getHeight())){
