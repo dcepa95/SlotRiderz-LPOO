@@ -68,15 +68,15 @@ public class MenuCarScreen implements Screen {
 
         backgroundImage = new Sprite(new Texture("img/backgroundImage.png"));
         backgroundImage.setCenter(0,0);
-        nextButton = new Sprite(new Texture("img/nextButton.png"));
+        nextButton = new Sprite(new Texture("img/rightArrow.png"));
         nextButton.scale(0.00001f);
-        nextButton.setCenter(300,-300);
-        backButton = new Sprite(new Texture("img/backButton.png"));
+        nextButton.setCenter(500,-255);
+        backButton = new Sprite(new Texture("img/leftArrow.png"));
         backButton.scale(0.00001f);
-        backButton.setCenter(-300,-300);
+        backButton.setCenter(-500,-255);
 
 
-        selectACar = new Sprite(new Texture("img/SELECTCAR.png"));
+        //selectACar = new Sprite(new Texture("img/SELECTCAR.png"));
         batch = new SpriteBatch();
 
         spriteCar1 = new Sprite(new Texture("img/carBlue.png"));

@@ -3,37 +3,31 @@ package com.mygdx.game.Screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.mygdx.game.Enteties.AI;
-import com.mygdx.game.Enteties.Car;
-import com.mygdx.game.Enteties.Game;
-import com.mygdx.game.Enteties.Player;
-import com.mygdx.game.Enteties.Track;
+import com.mygdx.game.MyGdxGame;
+import com.mygdx.game.logic.AI;
+import com.mygdx.game.logic.Game;
+import com.mygdx.game.logic.Player;
+import com.mygdx.game.logic.Track;
 
 public class FollowWaypoints implements Screen {
     private ShapeRenderer sr;
-    private ShapeRenderer GUI;
     private SpriteBatch b2;
     private SpriteBatch batch;
     private Sprite sprite;
-    private Sprite trackSprite;
-    private int trackHelper;
     private Player player;
-    private Array<AI> ais;
 
     private Box2DDebugRenderer debugRenderer;
     private OrthographicCamera camera;
@@ -41,52 +35,67 @@ public class FollowWaypoints implements Screen {
     private BitmapFont bitmapFont;
     private Track track;
 
-    private Viewport GUIport;
-    private Viewport gamePort;
 
     private int baseRes = 1280;
 
     private Sprite rightArrow;
+    private Texture rightArrowTex;
+    private Texture rightArrowDownTex;
+
     private Sprite leftArrow;
+    private Texture leftArrowTex;
+    private Texture leftArrowDownTex;
+
     private Sprite pedal;
-    private Sprite trap;
+    private Texture pedalTex;
+    private Texture pedalDownTex;
+
+    private Sprite pause;
+    private Texture pauseTex;
+    private Texture pauseDownTex;
+
+    private Sprite first;
+    private Sprite second;
+    private Sprite third;
+    private Sprite fourth;
+    private Sprite lapSprite;
+
+    private Sprite digit1;
+    private Sprite digit2;
+    private Sprite bar;
+    private Sprite digit3;
+    private Sprite digit4;
+
+    private Texture num0;
+    private Texture num1;
+    private Texture num2;
+    private Texture num3;
+    private Texture num4;
+    private Texture num5;
+    private Texture num6;
+    private Texture num7;
+    private Texture num8;
+    private Texture num9;
+    private Texture go;
+
+
+    private Sprite resumeGameButton;
+    private Sprite countDown;
+
+
     private Vector3 input;
 
-    private Texture explosion;
-    private TextureRegion[] animatedExplosion;
-    private Animation animation;
-    private float explosionCounterCar1=0f;
-    private boolean collisionCar1 = false;
-    private float explosionCounterCar2=0f;
-    private boolean collisionCar2 = false;
-    private float explosionCounterCar3=0f;
-    private boolean collisionCar3 = false;
-    private float explosionCounterCar4=0f;
-    private boolean collisionCar4 = false;
-
-    private Array<Rectangle> traps;
-    private Array<Vector2> explosionPosition;
-
     private Game game;
+    private MyGdxGame app;
 
+    private boolean gameStarted=false;
+    private boolean gamePaused=false;
+    private float startCount=0;
 
-    public void createExplosion(){
-        explosion = new Texture("img/explosion.png");
-        TextureRegion[][] tmp = TextureRegion.split(explosion,explosion.getWidth()/8,explosion.getHeight()/9);
-        animatedExplosion=transformTo1D(tmp);
-        animation = new Animation(1f/60f,animatedExplosion);
-    }
-
-    public TextureRegion[] transformTo1D(TextureRegion[][] tmp){
-        TextureRegion[] walkFrames = new TextureRegion[72];
-        int index=0;
-        for(int i=0;i<9;i++){
-            for(int j=0;j<8;j++){
-                walkFrames[index]=tmp[i][j];
-                index++;
-            }
-        }
-        return walkFrames;
+    public FollowWaypoints(MyGdxGame app, Sprite playerCar, Track t){
+        this.app=app;
+        sprite=playerCar;
+        track=t;
     }
 
     @Override
@@ -95,20 +104,14 @@ public class FollowWaypoints implements Screen {
 
         bitmapFont = new BitmapFont();
         bitmapFont.getData().scale(3);
-
+        GUIcamera = new OrthographicCamera(baseRes,baseRes*Gdx.graphics.getHeight()/Gdx.graphics.getWidth());
+        camera = new OrthographicCamera(baseRes, baseRes*Gdx.graphics.getHeight()/Gdx.graphics.getWidth());
+        camera.zoom=0.3f;
         sr = new ShapeRenderer();
-        GUI = new ShapeRenderer();
         batch = new SpriteBatch();
         b2=new SpriteBatch();
 
-        debugRenderer = new Box2DDebugRenderer();
-        camera = new OrthographicCamera(baseRes, baseRes*Gdx.graphics.getHeight()/Gdx.graphics.getWidth());
-        camera.zoom=0.5f;
-        GUIcamera = new OrthographicCamera(baseRes,baseRes*Gdx.graphics.getHeight()/Gdx.graphics.getWidth());
         track=new Track();
-
-
-        sprite = new Sprite(new Texture("img/carGreen.png"));
 
         sprite.setSize(11,33);
         sprite.setOriginCenter();
@@ -119,40 +122,99 @@ public class FollowWaypoints implements Screen {
 
         sprite = new Sprite(new Texture("img/finishLine2.png"));
         sprite.setOriginCenter();
-        sprite.setCenter(track.getBeginningPos().x-37.5f,track.getBeginningPos().y+10);
+        sprite.setCenter(track.getBeginningPos().x-37.5f,track.getBeginningPos().y+9);
 
-        trackSprite = new Sprite(new Texture("img/trackPiece2.png"));
-        trackSprite.setOriginCenter();
-
-        rightArrow = new Sprite(new Texture("img/rightArrow.png"));
+        rightArrowTex=new Texture("img/rightArrow.png");
+        rightArrowDownTex=new Texture("img/rightArrowDown.png");
+        leftArrowTex=new Texture("img/leftArrow.png");
+        leftArrowDownTex=new Texture("img/leftArrowDown.png");
+        pedalTex=new Texture("img/pedal.png");
+        pedalDownTex=new Texture("img/pedalDown.png");
+        pauseTex=new Texture("img/pause.png");
+        pauseDownTex = new Texture("img/pauseDown.png");
+        rightArrow = new Sprite(rightArrowTex);
+        rightArrow.setSize(100,100);
         rightArrow.setPosition(500,-275);
 
-        leftArrow = new Sprite(new Texture("img/leftArrow.png"));
-        //leftArrow.setSize(50,50);
+        leftArrow = new Sprite(leftArrowTex);
+        leftArrow.setSize(100,100);
         leftArrow.setPosition(350,-275);
 
-        pedal = new Sprite(new Texture("img/pedal.png"));
-        pedal.setSize(120,120);
+        pedal = new Sprite(pedalTex);
+        //pedal.setSize(60,120);
         pedal.setPosition(-525,-275);
 
-        createExplosion();
-        trap = new Sprite(new Texture("img/trap.png"));
-        trap.setScale(0.5f);
-        trap.setPosition(370,452.3f);
-        traps = new Array<Rectangle>();
-        traps.add(trap.getBoundingRectangle());
+        pause=new Sprite(pauseTex);
+        pause.setSize(100,100);
+        pause.setPosition(500,250);
 
-        explosionPosition = new Array<Vector2>();
-        explosionPosition.add(new Vector2());
-        explosionPosition.add(new Vector2());
-        explosionPosition.add(new Vector2());
-        explosionPosition.add(new Vector2());
+        camera.position.set(game.getPlayer().getCar().getX() + game.getPlayer().getCar().getWidth() / 2, game.getPlayer().getCar().getY() + game.getPlayer().getCar().getHeight() / 2, 0);
+        camera.update();
+        batch.setProjectionMatrix(camera.combined);
+
+        first = new Sprite(new Texture("img/first.png"));
+        first.setPosition(-100,190);
+        second = new Sprite(new Texture("img/second.png"));
+        second.setPosition(-100,190);
+        third = new Sprite(new Texture("img/third.png"));
+        third.setPosition(-100,190);
+        fourth = new Sprite(new Texture("img/fourth.png"));
+        fourth.setPosition(-100,190);
+
+        //Show Lap
+
+        num0=new Texture("img/zero.png");
+        num1=new Texture("img/one.png");
+        num2=new Texture("img/two.png");
+        num3=new Texture("img/three.png");
+        num4=new Texture("img/four.png");
+        num5=new Texture("img/five.png");
+        num6=new Texture("img/six.png");
+        num7=new Texture("img/seven.png");
+        num8=new Texture("img/eight.png");
+        num9=new Texture("img/nine.png");
+        go = new Texture("img/go.png");
+
+
+        lapSprite=new Sprite(new Texture("img/lap.png"));
+        lapSprite.setScale(0.75f);
+        lapSprite.setPosition(-600,230);
+
+        digit1=new Sprite(num0);
+        digit1.setScale(0.5f);
+        digit1.setPosition(-500,190);
+        digit2=new Sprite(num1);
+        digit2.setScale(0.5f);
+        digit2.setPosition(-450,190);
+        bar=new Sprite(new Texture("img/bar.png"));
+        bar.setScale(0.5f);
+        bar.setPosition(-400,200);
+        digit3=new Sprite(num1);
+        digit3.setScale(0.5f);
+        digit3.setPosition(-350,190);
+        digit4=new Sprite(num0);
+        digit4.setScale(0.5f);
+        digit4.setPosition(-300,190);
+
+
+        resumeGameButton = new Sprite (new Texture("img/resume.png"));
+        resumeGameButton.setScale(0.5f);
+        resumeGameButton.setPosition(-100,-50);
+        countDown=new Sprite(num3);
+        countDown.setPosition(-50,-100);
     }
 
 
     @Override
     public void render(float delta) {
+
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        if(game.end()){
+            //TODO FINISHSCREEN
+            app.setScreen(new MenuMainScreen(app));
+        }
+
         if(0.3f + 0.1f*player.getCar().getSpeed()*Gdx.graphics.getDeltaTime()/5<0.3f)
             camera.zoom=0.3f;
         else if(0.3f + 0.1f*player.getCar().getSpeed()*Gdx.graphics.getDeltaTime()/5>0.4f)
@@ -161,47 +223,94 @@ public class FollowWaypoints implements Screen {
             camera.zoom=0.3f + 0.1f*player.getCar().getSpeed()*Gdx.graphics.getDeltaTime()/5;
         //drunk MODE
         //camera.rotate(100*Gdx.graphics.getDeltaTime());
-
-        if(!game.getPlayer().getCar().isOffTrack() && !game.getPlayer().getCar().isExploding()){
-            updatePlayerBehaviour(delta);
+        if(!gameStarted){
+            startCount+=Gdx.graphics.getDeltaTime();
+            if(startCount>3) {
+                gameStarted = true;
+            }else{
+                if(startCount<1){
+                    countDown.setTexture(num3);
+                    countDown.setSize(86,188);
+                    countDown.setPosition(-43,-94);
+                }else if(startCount<2){
+                    countDown.setTexture(num2);
+                }else if(startCount<3){
+                    countDown.setTexture(num1);
+                }
+            }
+        }else{
+            if(startCount<4){
+                startCount+=Gdx.graphics.getDeltaTime();
+                countDown.setTexture(go);
+                countDown.setSize(241,188);
+                countDown.setPosition(-120.5f,-94);
+            }
         }
-        game.update(delta);
+
+        if(gamePaused){
+            batch.begin();
+            pauseBehaviour(batch);
+            batch.end();
+        }
+
+
+        if(!gamePaused && gameStarted) {
+            if (!game.getPlayer().getCar().isOffTrack() && !game.getPlayer().getCar().isExploding()) {
+                updatePlayerBehaviour(delta);
+            }
+            game.update(delta);
+        }
         batch.begin();
         game.draw(batch);
+        sprite.draw(batch);
         batch.end();
 
-       /* sr.setColor(Color.WHITE);
+        sr.setColor(Color.WHITE);
+        sr.setProjectionMatrix(camera.combined);
         sr.begin(ShapeRenderer.ShapeType.Line);
-        trackHelper=0;
-        for( Array<Vector2> path : track.getTrack()){
-
-            previous = path.first();
-
-            for(Vector2 waypoint : path){
-                if(trackHelper==0){
-                    trackSprite.setCenter(waypoint.x-38,waypoint.y);
-                    //trackSprite.draw(batch);
-                }
-                sr.line(previous,waypoint);
-                previous=waypoint;
-            }
-            trackHelper++;
-            //sr.line(previous,path.first());
-        }
-        sr.end();*/
+        game.drawDebug(sr);
+        sr.end();
 
         b2.setProjectionMatrix(GUIcamera.combined);
         b2.begin();
         leftArrow.draw(b2);
         rightArrow.draw(b2);
         pedal.draw(b2);
+        pause.draw(b2);
+        //draw position
+        switch (game.getPlayer().getCar().getPos()){
+            case 1:
+                first.draw(b2);
+                break;
+            case 2:
+                second.draw(b2);
+                break;
+            case 3:
+                third.draw(b2);
+                break;
+            case 4:
+                fourth.draw(b2);
+                break;
+        }
+        //draw laps
+        updateLapSprites();
+        lapSprite.draw(b2);
+        digit1.draw(b2);
+        digit2.draw(b2);
+        bar.draw(b2);
+        digit3.draw(b2);
+        digit4.draw(b2);
+        //debug
         bitmapFont.setColor(1.0f, 1.0f, 1.0f, 1.0f);
-        bitmapFont.draw(b2,"pos: " + Integer.toString(game.getPlayer().getCar().getPos()),-250,290);
-        bitmapFont.draw(b2,"lap: " + Integer.toString(game.getPlayer().getLap()),50,290);
         bitmapFont.draw(b2,"fps: " + Integer.toString(Gdx.graphics.getFramesPerSecond()),-600,-300);
+        //counter draw
+        if(startCount<4)
+            countDown.draw(b2);
+        //draw pause menu
+        if(gamePaused){
+            resumeGameButton.draw(b2);
+        }
         b2.end();
-
-
     }
 
     @Override
@@ -231,9 +340,18 @@ public class FollowWaypoints implements Screen {
     @Override
     public void dispose() {
         batch.dispose();
-        GUI.dispose();
         b2.dispose();
         sprite.getTexture().dispose();
+        pedal.getTexture().dispose();
+        rightArrow.getTexture().dispose();
+        leftArrow.getTexture().dispose();
+        pause.getTexture().dispose();
+        rightArrowTex.dispose();
+        rightArrowDownTex.dispose();
+        leftArrowTex.dispose();
+        leftArrowDownTex.dispose();
+        pedalTex.dispose();
+        pedalDownTex.dispose();
         sr.dispose();
         debugRenderer.dispose();
     }
@@ -241,9 +359,15 @@ public class FollowWaypoints implements Screen {
     private void updatePlayerBehaviour(float deltaTime){
         if (!game.getPlayer().getCar().isChangingLane()) {
             if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) || isTouched(rightArrow.getX(), rightArrow.getX() + rightArrow.getWidth(), rightArrow.getY(), rightArrow.getY() + rightArrow.getHeight())) {
+                rightArrow.setTexture(rightArrowDownTex);
+                rightArrow.setSize(100,100);
+                rightArrow.setPosition(500,-275);
+                leftArrow.setTexture(leftArrowTex);
+                leftArrow.setSize(100,100);
+                leftArrow.setPosition(350,-275);
                 if (game.getPlayer().getLane() > 0) {
                     game.getPlayer().setLane(game.getPlayer().getLane() - 1);
-                    if ((game.getPlayer().getCar().getWaypoint() + 3) % game.getPlayer().getCar().getPath().size > 1 && (game.getPlayer().getCar().getWaypoint() + 3) % game.getPlayer().getCar().getPath().size <= 4) {
+                    if ((game.getPlayer().getCar().getWaypoint() + 3) % game.getPlayer().getCar().getPath().size > 0 && (game.getPlayer().getCar().getWaypoint() + 3) % game.getPlayer().getCar().getPath().size <= 3) {
                         game.getPlayer().getCar().setLap(game.getPlayer().getCar().getLap() + 1);
                     }
                     game.getPlayer().getCar().setWaypoint((game.getPlayer().getCar().getWaypoint() + 3) % game.getPlayer().getCar().getPath().size);
@@ -251,20 +375,35 @@ public class FollowWaypoints implements Screen {
                     game.getPlayer().getCar().changeLane();
                 }
             } else if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT) || isTouched(leftArrow.getX(), leftArrow.getX() + leftArrow.getWidth(), leftArrow.getY(), leftArrow.getY() + leftArrow.getHeight())) {
+                rightArrow.setTexture(rightArrowTex);
+                rightArrow.setSize(100,100);
+                rightArrow.setPosition(500,-275);
+                leftArrow.setTexture(leftArrowDownTex);
+                leftArrow.setSize(100,100);
+                leftArrow.setPosition(350,-275);
                 if (game.getPlayer().getLane() < 3) {
                     game.getPlayer().setLane(game.getPlayer().getLane() + 1);
-                    if ((game.getPlayer().getCar().getWaypoint() + 3) % game.getPlayer().getCar().getPath().size > 1 && (game.getPlayer().getCar().getWaypoint() + 3) % game.getPlayer().getCar().getPath().size <= 4) {
+                    if ((game.getPlayer().getCar().getWaypoint() + 3) % game.getPlayer().getCar().getPath().size > 0 && (game.getPlayer().getCar().getWaypoint() + 3) % game.getPlayer().getCar().getPath().size <= 3) {
                         game.getPlayer().getCar().setLap(game.getPlayer().getCar().getLap() + 1);
                     }
                     game.getPlayer().getCar().setWaypoint((game.getPlayer().getCar().getWaypoint() + 3) % game.getPlayer().getCar().getPath().size);
                     game.getPlayer().getCar().setWaypointsPassed(game.getPlayer().getCar().getWaypointsPassed() + 2);
                     game.getPlayer().getCar().changeLane();
                 }
+            }else{
+                leftArrow.setTexture(leftArrowTex);
+                leftArrow.setSize(100,100);
+                leftArrow.setPosition(350,-275);
+                rightArrow.setTexture(rightArrowTex);
+                rightArrow.setSize(100,100);
+                rightArrow.setPosition(500,-275);
             }
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.UP) || isTouched(pedal.getX(), pedal.getX() + pedal.getWidth(), pedal.getY(), pedal.getY() + pedal.getHeight())) {
-            pedal.setTexture(new Texture("img/pedalDown.png"));
+            pedal.setTexture(pedalDownTex);
+            pedal.setSize(136,182);
+            pedal.setPosition(-521,-275);
             game.getPlayer().getCar().setAccelerating(true);
             if (game.getPlayer().getCar().getSpeed() < game.getPlayer().getCar().getMaxSpeed()) {
                 if (game.getPlayer().getCar().getSpeed() + game.getPlayer().getCar().getAcceleration() * deltaTime > game.getPlayer().getCar().getMaxSpeed())
@@ -276,7 +415,9 @@ public class FollowWaypoints implements Screen {
                 game.getPlayer().getCar().setSpeed((float) game.getPlayer().getCar().getMaxSpeed());
             }
         } else {
-            pedal.setTexture(new Texture("img/pedal.png"));
+            pedal.setTexture(pedalTex);
+            pedal.setSize(140,187);
+            pedal.setPosition(-525,-275);
             game.getPlayer().getCar().setAccelerating(false);
             if (game.getPlayer().getCar().getSpeed() > 0) {
                 if (game.getPlayer().getCar().getSpeed() * 0.95f < 0)
@@ -287,9 +428,27 @@ public class FollowWaypoints implements Screen {
                 game.getPlayer().getCar().setSpeed((float) 0);
             }
         }
+
+        if(Gdx.input.isKeyJustPressed(Input.Keys.P) || isJustTouched(pause.getX(), pause.getX() + pause.getWidth(), pause.getY(), pause.getY() + pause.getHeight())){
+            pause.setTexture(pauseDownTex);
+            gamePaused=true;
+        }else{
+            pause.setTexture(pauseTex);
+        }
     }
 
-    public boolean isTouched(float x1, float x2, float y1, float y2) {
+    private void pauseBehaviour(SpriteBatch batch){
+        if(Gdx.input.isKeyJustPressed(Input.Keys.P) || isJustTouched(resumeGameButton.getX(),resumeGameButton.getX()+resumeGameButton.getWidth(),resumeGameButton.getY(),resumeGameButton.getY()+resumeGameButton.getHeight())){
+
+            gamePaused=false;
+            gameStarted=false;
+            startCount=0;
+        }else{
+
+        }
+    }
+
+    private boolean isTouched(float x1, float x2, float y1, float y2) {
         for (int i = 0; i < 20; i++) {
             if (!Gdx.input.isTouched(i))
                 continue;
@@ -300,5 +459,154 @@ public class FollowWaypoints implements Screen {
             }
         }
         return false;
+    }
+
+    private boolean isJustTouched(float x1, float x2, float y1, float y2) {
+        for (int i = 0; i < 20; i++) {
+            if (!Gdx.input.isTouched(i))
+                continue;
+            input = new Vector3(Gdx.input.getX(i), Gdx.input.getY(i), 0);
+            GUIcamera.unproject(input);
+            if(Gdx.input.justTouched()) {
+                if (input.x >= x1 && input.x <= x2 && input.y >= y1 && input.y <= y2) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private void updateLapSprites(){
+        switch (game.getPlayer().getLap()/10){
+            case 0:
+                digit1.setTexture(num0);
+                break;
+            case 1:
+                digit1.setTexture(num1);
+                break;
+            case 2:
+                digit1.setTexture(num2);
+                break;
+            case 3:
+                digit1.setTexture(num3);
+                break;
+            case 4:
+                digit1.setTexture(num4);
+                break;
+            case 5:
+                digit1.setTexture(num5);
+                break;
+            case 6:
+                digit1.setTexture(num6);
+                break;
+            case 7:
+                digit1.setTexture(num7);
+                break;
+            case 8:
+                digit1.setTexture(num8);
+                break;
+            case 9:
+                digit1.setTexture(num9);
+                break;
+        }
+
+        switch (game.getPlayer().getLap()%10){
+            case 0:
+                digit2.setTexture(num0);
+                break;
+            case 1:
+                digit2.setTexture(num1);
+                break;
+            case 2:
+                digit2.setTexture(num2);
+                break;
+            case 3:
+                digit2.setTexture(num3);
+                break;
+            case 4:
+                digit2.setTexture(num4);
+                break;
+            case 5:
+                digit2.setTexture(num5);
+                break;
+            case 6:
+                digit2.setTexture(num6);
+                break;
+            case 7:
+                digit2.setTexture(num7);
+                break;
+            case 8:
+                digit2.setTexture(num8);
+                break;
+            case 9:
+                digit2.setTexture(num9);
+                break;
+        }
+
+        switch (track.getLaps()/10){
+            case 0:
+                digit3.setTexture(num0);
+                break;
+            case 1:
+                digit3.setTexture(num1);
+                break;
+            case 2:
+                digit3.setTexture(num2);
+                break;
+            case 3:
+                digit3.setTexture(num3);
+                break;
+            case 4:
+                digit3.setTexture(num4);
+                break;
+            case 5:
+                digit3.setTexture(num5);
+                break;
+            case 6:
+                digit3.setTexture(num6);
+                break;
+            case 7:
+                digit3.setTexture(num7);
+                break;
+            case 8:
+                digit3.setTexture(num8);
+                break;
+            case 9:
+                digit3.setTexture(num9);
+                break;
+        }
+
+        switch (track.getLaps()%10){
+            case 0:
+                digit4.setTexture(num0);
+                break;
+            case 1:
+                digit4.setTexture(num1);
+                break;
+            case 2:
+                digit4.setTexture(num2);
+                break;
+            case 3:
+                digit4.setTexture(num3);
+                break;
+            case 4:
+                digit4.setTexture(num4);
+                break;
+            case 5:
+                digit4.setTexture(num5);
+                break;
+            case 6:
+                digit4.setTexture(num6);
+                break;
+            case 7:
+                digit4.setTexture(num7);
+                break;
+            case 8:
+                digit4.setTexture(num8);
+                break;
+            case 9:
+                digit4.setTexture(num9);
+                break;
+        }
     }
 }
