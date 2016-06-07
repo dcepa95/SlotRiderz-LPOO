@@ -77,6 +77,7 @@ public class LoadingScreen implements Screen{
         app.assets.load("img/backgroundMenuImage.png",Texture.class);
         app.assets.load("img/backgroundMenuImage2.png",Texture.class);
         app.assets.load("img/bar.png",Texture.class);
+        app.assets.load("img/logosemfundo.png",Texture.class);
         //positions
         app.assets.load("img/first.png",Texture.class);
         app.assets.load("img/second.png",Texture.class);

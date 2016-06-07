@@ -68,7 +68,7 @@ public class MenuCarScreen implements Screen {
     public void show() {
         camera = new OrthographicCamera(baseRes, baseRes*Gdx.graphics.getHeight()/Gdx.graphics.getWidth());
 
-        backgroundImage = new Sprite(game.assets.get("img/backgroundImage.png",Texture.class));
+        backgroundImage = new Sprite(game.assets.get("img/logosemfundo.png",Texture.class));
         backgroundImage.setCenter(0,0);
         nextButton = new Sprite(game.assets.get("img/next.png",Texture.class));
         nextButton.setSize(179.2f,64.6f);

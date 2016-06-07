@@ -44,7 +44,7 @@ public class MenuTrackScreen implements Screen {
     public void show() {
         camera = new OrthographicCamera(baseRes,baseRes*Gdx.graphics.getHeight()/Gdx.graphics.getWidth());
         batch = new SpriteBatch();
-        backgroundImage = new Sprite(game.assets.get("img/backgroundImage.png",Texture.class));
+        backgroundImage = new Sprite(game.assets.get("img/logosemfundo.png",Texture.class));
         backgroundImage.setOriginCenter();
         backgroundImage.setCenter(0,0);
         nextButton = new Sprite(game.assets.get("img/next.png",Texture.class));

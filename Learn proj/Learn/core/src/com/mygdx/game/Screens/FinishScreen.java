@@ -60,7 +60,7 @@ public class FinishScreen implements Screen {
         position.draw(batch);
         batch.end();
 
-        if(Gdx.input.isTouched()){
+        if(Gdx.input.justTouched()){
             app.setScreen(new MenuMainScreen(app));
         }
     }

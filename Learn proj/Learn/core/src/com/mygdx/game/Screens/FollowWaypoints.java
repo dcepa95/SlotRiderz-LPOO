@@ -75,6 +75,7 @@ public class FollowWaypoints implements Screen {
 
 
     private Sprite resumeGameButton;
+    private Sprite quit;
     private Sprite countDown;
 
 
@@ -122,12 +123,12 @@ public class FollowWaypoints implements Screen {
         pauseTex = app.assets.get("img/pause.png");
         pauseDownTex = app.assets.get("img/pauseDown.png");
         rightArrow = new Sprite(rightArrowTex);
-        rightArrow.setSize(100, 100);
-        rightArrow.setPosition(500, -325);
+        rightArrow.setSize(125, 125);
+        rightArrow.setPosition(475, -325);
 
         leftArrow = new Sprite(leftArrowTex);
-        leftArrow.setSize(100, 100);
-        leftArrow.setPosition(350, -325);
+        leftArrow.setSize(125, 125);
+        leftArrow.setPosition(275, -325);
 
         pedal = new Sprite(pedalTex);
         //pedal.setSize(60,120);
@@ -188,7 +189,10 @@ public class FollowWaypoints implements Screen {
 
         resumeGameButton = new Sprite(app.assets.get("img/resume.png", Texture.class));
         resumeGameButton.setSize(358.4f, 129.2f);
-        resumeGameButton.setCenter(0, 0);
+        resumeGameButton.setCenter(0,75);
+        quit = new Sprite(app.assets.get("img/quit.png", Texture.class));
+        quit.setSize(358.4f, 129.2f);
+        quit.setCenter(0, -75);
         countDown = new Sprite(num3);
         countDown.setPosition(-50, -100);
 
@@ -299,6 +303,7 @@ public class FollowWaypoints implements Screen {
         //draw pause menu
         if (gamePaused) {
             resumeGameButton.draw(b2);
+            quit.draw(b2);
         }
         b2.end();
     }
@@ -349,11 +354,7 @@ public class FollowWaypoints implements Screen {
         if (!game.getPlayer().getCar().isChangingLane()) {
             if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) || isTouched(rightArrow.getX(), rightArrow.getX() + rightArrow.getWidth(), rightArrow.getY(), rightArrow.getY() + rightArrow.getHeight())) {
                 rightArrow.setTexture(rightArrowDownTex);
-                rightArrow.setSize(100, 100);
-                rightArrow.setPosition(500, -325);
                 leftArrow.setTexture(leftArrowTex);
-                leftArrow.setSize(100, 100);
-                leftArrow.setPosition(350, -325);
                 if (game.getPlayer().getLane() > 0) {
                     game.getPlayer().setLane(game.getPlayer().getLane() - 1);
                     if ((game.getPlayer().getCar().getWaypoint() + 3) % game.getPlayer().getCar().getPath().size > 0 && (game.getPlayer().getCar().getWaypoint() + 3) % game.getPlayer().getCar().getPath().size <= 3) {
@@ -365,11 +366,7 @@ public class FollowWaypoints implements Screen {
                 }
             } else if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT) || isTouched(leftArrow.getX(), leftArrow.getX() + leftArrow.getWidth(), leftArrow.getY(), leftArrow.getY() + leftArrow.getHeight())) {
                 rightArrow.setTexture(rightArrowTex);
-                rightArrow.setSize(100, 100);
-                rightArrow.setPosition(500, -325);
                 leftArrow.setTexture(leftArrowDownTex);
-                leftArrow.setSize(100, 100);
-                leftArrow.setPosition(350, -325);
                 if (game.getPlayer().getLane() < 3) {
                     game.getPlayer().setLane(game.getPlayer().getLane() + 1);
                     if ((game.getPlayer().getCar().getWaypoint() + 3) % game.getPlayer().getCar().getPath().size > 0 && (game.getPlayer().getCar().getWaypoint() + 3) % game.getPlayer().getCar().getPath().size <= 3) {
@@ -381,11 +378,7 @@ public class FollowWaypoints implements Screen {
                 }
             } else {
                 leftArrow.setTexture(leftArrowTex);
-                leftArrow.setSize(100, 100);
-                leftArrow.setPosition(350, -325);
                 rightArrow.setTexture(rightArrowTex);
-                rightArrow.setSize(100, 100);
-                rightArrow.setPosition(500, -325);
             }
         }
 
@@ -433,6 +426,10 @@ public class FollowWaypoints implements Screen {
             gameStarted = false;
             startCount = 0;
             countDown.setTexture(num3);
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.P) || isTouched(quit.getX(), quit.getX() + quit.getWidth(), quit.getY(), quit.getY() + quit.getHeight())) {
+            app.setScreen(new MenuMainScreen(app));
         }
     }
 
