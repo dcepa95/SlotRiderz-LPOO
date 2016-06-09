@@ -9,14 +9,12 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Intersector;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Polygon;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
 /**
- * Created by digbe on 04/06/2016.
+ * Game Class responsible for the game loop
  */
 public class Game {
 
@@ -45,7 +43,10 @@ public class Game {
     private boolean paused=false;
     private float resumeCounter=0;
 
-    public void createExplosion(){
+    /**
+     * Creates the explosion animation
+     */
+    private void createExplosion(){
         explosion = new Texture("img/explosion.png");
         TextureRegion[][] tmp = TextureRegion.split(explosion,explosion.getWidth()/8,explosion.getHeight()/9);
         animatedExplosion=transformTo1D(tmp);
@@ -70,6 +71,14 @@ public class Game {
         return walkFrames;
     }
 
+    /**
+     * Creates a new game with a player and a track
+     * @param p the player
+     * @param t the track chosen
+     * @param camera
+     * @param batch
+     * @param sr
+     */
     public Game(Player p, Track t, OrthographicCamera camera, SpriteBatch batch, ShapeRenderer sr){
         player=p;
         track=t;
@@ -106,6 +115,10 @@ public class Game {
 
     }
 
+    /**
+     * Game loop, moves player and the AI's , checks collisions and updates car positions/places
+     * @param deltaTime
+     */
     public void update(float deltaTime){
         if(!paused) {
             if (player.getLap() < track.getLaps()) {
@@ -119,6 +132,10 @@ public class Game {
         }
     }
 
+    /**
+     * Draws game elements(cars and track)
+     * @param batch
+     */
     public void draw(SpriteBatch batch){
         track.draw(batch);
         for(Car car:cars){
@@ -128,6 +145,10 @@ public class Game {
 
     }
 
+    /**
+     * Draws debug elements (hitboxes)
+     * @param sr
+     */
     public void drawDebug(ShapeRenderer sr){
         sr.set(ShapeRenderer.ShapeType.Line);
         for(Car car : cars) {
@@ -141,6 +162,9 @@ public class Game {
         }
     }
 
+    /**
+     * updates the positions/places of the cars
+     */
     private void updateRacePositions() {
         int pos;
         for (int i = 0; i < cars.size; i++) {
@@ -164,6 +188,9 @@ public class Game {
         }
     }
 
+    /**
+     * Checks for car collisions with other cars or traps
+     */
     public void checkCarCollisions() {
         for (int i = 0; i < cars.size; i++) {
             for (int j = 0; j < cars.size; j++) {
@@ -327,6 +354,10 @@ public class Game {
         return Intersector.overlapConvexPolygons(car1front, car2left);
     }
 
+    /**
+     * Draws the cars explosions
+     * @param batch
+     */
     public void drawCollisions(SpriteBatch batch) {
         if (collisionCar1) {
             cars.get(0).setSpeed(0);
@@ -373,33 +404,18 @@ public class Game {
         }
     }
 
+    /**
+     * Returns the game player
+     * @return
+     */
     public Player getPlayer(){
         return player;
     }
 
-    public void pause(){
-        paused=true;
-        resumeCounter=0;
-    }
-
-    public void resume(SpriteBatch batch){
-        start(batch);
-    }
-
-    public void start(SpriteBatch batch){
-        resumeCounter+=Gdx.graphics.getDeltaTime();
-        if(resumeCounter<3){
-            //countdown
-        }else{
-            //go!
-            paused=false;
-        }
-    }
-
-    public boolean paused(){
-        return paused;
-    }
-
+    /**
+     * Checks if the game has ended
+     * @return true if the player has finished the race, false if he is still racing
+     */
     public boolean end(){
         return player.getLap()>=track.getLaps();
     }

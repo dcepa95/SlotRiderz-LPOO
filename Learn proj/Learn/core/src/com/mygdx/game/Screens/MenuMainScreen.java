@@ -12,7 +12,7 @@ import com.badlogic.gdx.utils.Timer;
 import com.mygdx.game.MyGdxGame;
 
 /**
- * Created by Amp on 27/05/2016.
+ * Main Menu screen
  */
 public class MenuMainScreen implements Screen {
 
@@ -36,6 +36,10 @@ public class MenuMainScreen implements Screen {
 
     private Vector3 input;
 
+    /**
+     * Creates a new main menu
+     * @param game game application
+     */
     public MenuMainScreen(MyGdxGame game) {
         this.game = game;
         camera = new OrthographicCamera(baseRes,baseRes*Gdx.graphics.getHeight()/Gdx.graphics.getWidth());
@@ -156,6 +160,14 @@ public class MenuMainScreen implements Screen {
         backgroundMenuImage.getTexture().dispose();
     }
 
+    /**
+     * Detects a touch in a square of the screen
+     * @param x1
+     * @param x2
+     * @param y1
+     * @param y2
+     * @return true if is just touched in that square
+     */
     private boolean isTouched(float x1, float x2, float y1, float y2){
         input.set(Gdx.input.getX(),Gdx.input.getY(),0);
         camera.unproject(input);

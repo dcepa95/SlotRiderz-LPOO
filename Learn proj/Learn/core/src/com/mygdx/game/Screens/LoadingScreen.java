@@ -13,7 +13,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.mygdx.game.MyGdxGame;
 
 /**
- * Created by digbe on 07/06/2016.
+ * Loading screen, responsible for loading all the textures used in the game
  */
 public class LoadingScreen implements Screen{
 
@@ -27,6 +27,10 @@ public class LoadingScreen implements Screen{
 
     private int baseRes=1280;
 
+    /**
+     * Creates a new loading screen
+     * @param app game application
+     */
     public LoadingScreen(MyGdxGame app) {
         this.app = app;
         this.shapeRenderer = new ShapeRenderer();
@@ -36,6 +40,9 @@ public class LoadingScreen implements Screen{
         logo.setCenter(0,100);
     }
 
+    /**
+     * Queue of assests to load.
+     */
     private void queueAssets() {
         //buttons
         app.assets.load("img/back.png", Texture.class);
@@ -110,6 +117,10 @@ public class LoadingScreen implements Screen{
         queueAssets();
     }
 
+    /**
+     * Updates progress of loading, if ended sets the screen as the main menu screen
+     * @param delta
+     */
     private void update(float delta) {
         progress = MathUtils.lerp(progress, app.assets.getProgress(), .1f);
         if (app.assets.update() && progress >= app.assets.getProgress() - .001f) {

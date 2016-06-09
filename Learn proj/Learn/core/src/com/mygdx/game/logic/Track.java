@@ -11,7 +11,7 @@ import com.mygdx.game.MyGdxGame;
 
 
 /**
- * Created by digbe on 10/05/2016.
+ * Class Track, responsible for creating and drawing a track.
  */
 public class Track {
 
@@ -35,7 +35,10 @@ public class Track {
     private Vector2 center;
     private Sprite finish;
 
-
+    /**
+     * Creates a new track
+     * @param app game application to load textures
+     */
     public Track(MyGdxGame app){
         trackSprite = new Sprite(app.assets.get("img/trackPiece1.png",Texture.class));
         trackSpriteCurveRight = new Sprite(app.assets.get("img/trackPiece3.png",Texture.class));
@@ -49,6 +52,12 @@ public class Track {
         track1(app);
     }
 
+    /**
+     * Creates a curve
+     * @param cAngle angle of the curve
+     * @param direction curve type( up to 8 types)
+     * @param points number of points to draw in this curve
+     */
     private void makeCurve(float cAngle, int direction, int points){
         float incAngle = cAngle/points;
         float finalAngle = actualAngle + cAngle;
@@ -150,6 +159,11 @@ public class Track {
         }
     }
 
+    /**
+     * Creates a line
+     * @param points number of points of the line(tells the distance of the line in 20 pixels per point)
+     * @param type type of the line(up to 4 types)
+     */
     private void makeLine(int points, int type){
         Vector2 internPos = currentPos;
         Vector2 finalPos = new Vector2();
@@ -194,6 +208,10 @@ public class Track {
         }
     }
 
+    /**
+     * Creates track1
+     * @param app game application for loading textures
+     */
     private void track1(MyGdxGame app){
         tracks = new Array<Array<Vector2> >();
         tracks.add(new Array<Vector2>());
@@ -222,7 +240,9 @@ public class Track {
         track1Traps(app);
         cross.setCenter(162.5f,227.5f);
     }
-
+    /**
+     * Creates track2
+     */
     private void track2(){
         tracks=new Array<Array<Vector2> >();
         tracks.add(new Array<Vector2>());
@@ -266,64 +286,41 @@ public class Track {
         makeLine(7,1);*/
     }
 
-    private void track3(){
-        tracks=new Array<Array<Vector2> >();
-        tracks.add(new Array<Vector2>());
-        tracks.add(new Array<Vector2>());
-        tracks.add(new Array<Vector2>());
-        tracks.add(new Array<Vector2>());
-
-        curveRightPoints = new Array<Integer>();
-        curveLeftPoints = new Array<Integer>();
-
-        makeLine(3,1);
-        makeCurve((float) 90*MathUtils.degreesToRadians,1,10);
-        makeLine(3,3);
-        makeCurve((float) 90*MathUtils.degreesToRadians,6,10);
-        makeLine(3,2);
-        makeCurve((float) 90*MathUtils.degreesToRadians,4,10);
-        makeLine(3,4);
-        makeCurve((float) 90*MathUtils.degreesToRadians,7,10);
-    }
-
-    private void track4(){
-        tracks=new Array<Array<Vector2> >();
-        tracks.add(new Array<Vector2>());
-        tracks.add(new Array<Vector2>());
-        tracks.add(new Array<Vector2>());
-        tracks.add(new Array<Vector2>());
-        makeLine(3,1);
-        makeCurve((float) 90*MathUtils.degreesToRadians,1,10);
-        makeLine(3,3);
-        makeCurve((float) 90*MathUtils.degreesToRadians,6,10);
-        makeLine(3,2);
-        makeCurve((float) 90*MathUtils.degreesToRadians,4,10);
-        makeLine(3,4);
-        makeCurve((float) 90*MathUtils.degreesToRadians,7,10);
-    }
-
+    /**
+     * Returns a set of 4 lanes that were created
+     * @return lanes
+     */
     public Array<Array<Vector2>> getTrack() {
         return tracks;
     }
 
+    /**
+     * Returns the beginning position for lane 1
+     * @return beginning position
+     */
     public Vector2 getBeginningPos() {
         return beginningPos;
     }
 
+    /**
+     * Sets the track as a new predifined one
+     * @param number number of the track
+     * @param app game application for loading textures
+     */
     public void setTrack(int number, MyGdxGame app){
         switch(number){
             case 1:
                 track1(app);
             case 2:
                 track2();
-            case 3:
-                track3();
-            case 4:
-                track4();
         }
         currentTrack=number;
     }
 
+    /**
+     * Returns a set of points that belong to a curve
+     * @return curve points
+     */
     public Array<Array<Integer> > getCurvePoints() {
         Array<Array<Integer> > temp = new Array<Array<Integer> >();
         temp.add(curveRightPoints);
@@ -331,6 +328,10 @@ public class Track {
         return temp;
     }
 
+    /**
+     * Draws the current track
+     * @param batch
+     */
     public void draw(SpriteBatch batch){
         trackSpriteCurveRight.setOriginCenter();
         trackSpriteCurveLeft.setOriginCenter();
@@ -346,6 +347,10 @@ public class Track {
 
     }
 
+    /**
+     * Draws track 1
+     * @param batch
+     */
     private void drawTrack1(SpriteBatch batch){
         currentPos = new Vector2((float) 200,(float) 200);
         drawLine(9,1,batch);
@@ -367,6 +372,10 @@ public class Track {
         finish.draw(batch);
     }
 
+    /**
+     * Draws track 2
+     * @param batch
+     */
     private void drawTrack2(SpriteBatch batch){
         currentPos = new Vector2((float) 200,(float) 200);
         drawLine(9,1,batch);
@@ -393,6 +402,12 @@ public class Track {
         drawCurve((float) 90*MathUtils.degreesToRadians,1,10,batch);
     }
 
+    /**
+     * Draws a line
+     * @param points points of the line
+     * @param type type of the line
+     * @param batch
+     */
     private void drawLine(int points, int type, SpriteBatch batch){
         if (type == 1) { // up
             for (int i = 1; i < points; i++) {
@@ -425,6 +440,13 @@ public class Track {
         }
     }
 
+    /**
+     * Draws a curve
+     * @param cAngle curve angle
+     * @param direction type of curve
+     * @param points points of the curve
+     * @param batch
+     */
     private void drawCurve(float cAngle, int direction, int points, SpriteBatch batch){
         float incAngle = cAngle/points;
         //float finalAngle = actualAngle + cAngle;
@@ -509,6 +531,10 @@ public class Track {
         radius = 100;
     }
 
+    /**
+     * Creates track1's traps and its hitboxes
+     * @param app
+     */
     private void track1Traps(MyGdxGame app){
         traps=new Array<Polygon>();
         trapSprite = new Array<Sprite>();
@@ -534,16 +560,28 @@ public class Track {
 
     }
 
+    /**
+     * Draws current track traps
+     * @param batch
+     */
     private void drawTraps(SpriteBatch batch){
         for(Sprite s: trapSprite){
             s.draw(batch);
         }
     }
 
+    /**
+     * Returs the hitboxes of the traps
+     * @return traps hitboxes
+     */
     public  Array<Polygon> getTraps(){
         return traps;
     }
 
+    /**
+     * Return the track number of laps
+     * @return laps
+     */
     public int getLaps(){
         return laps;
     }

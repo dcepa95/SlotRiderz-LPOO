@@ -3,18 +3,16 @@ package com.mygdx.game.Screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
-
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.mygdx.game.MyGdxGame;
 
 
 /**
- * Created by Amp on 01/06/2016.
+ * Car selection screen
  */
 public class MenuCarScreen implements Screen {
 
@@ -45,15 +43,23 @@ public class MenuCarScreen implements Screen {
     private boolean car4pressed=false;
     private boolean car5pressed=false;
 
-    Vector3 touchPos; // creates a vector3 object for our touch event
 
-
-
-
+    /**
+     * Creates a new MenuCarScreen
+     * @param game game application
+     */
     public MenuCarScreen(MyGdxGame game) {
         this.game = game;
     }
 
+    /**
+     * Recognizes if a place is touched in a square
+     * @param x1
+     * @param x2
+     * @param y1
+     * @param y2
+     * @return
+     */
     public boolean isTouched(float x1, float x2, float y1, float y2){
             input.set(Gdx.input.getX(),Gdx.input.getY(),0);
             camera.unproject(input);

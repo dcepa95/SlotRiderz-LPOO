@@ -5,8 +5,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.mygdx.game.Screens.*;
+import com.mygdx.game.Screens.LoadingScreen;
 
+/**
+ * Game application
+ */
 public class MyGdxGame extends Game {
 
 	public static int WIDTH;

@@ -12,7 +12,7 @@ import com.mygdx.game.MyGdxGame;
 import com.mygdx.game.logic.Track;
 
 /**
- * Created by Amp on 03/06/2016.
+ * Track Selection Screen
  */
 public class MenuTrackScreen implements Screen {
     private Sprite backgroundImage;
@@ -34,7 +34,11 @@ public class MenuTrackScreen implements Screen {
     private boolean track1Chosen;
     private boolean track2Chosen;
 
-
+    /**
+     * Creates a new track menu screen
+     * @param game
+     * @param currCar
+     */
     public MenuTrackScreen(MyGdxGame game, Sprite currCar) {
         this.game = game;
         this.currCar = currCar;
@@ -80,7 +84,7 @@ public class MenuTrackScreen implements Screen {
 
         //touch next button
         if(isTouched(nextButton.getX(),nextButton.getX()+nextButton.getWidth(),nextButton.getY(),nextButton.getY()+nextButton.getHeight())){
-            game.setScreen(new FollowWaypoints(game,currCar,new Track(game)));
+            game.setScreen(new GameScreen(game,currCar,new Track(game)));
         }
         //touch back button
         if(isTouched(backButton.getX(),backButton.getX()+backButton.getWidth(),backButton.getY(),backButton.getY()+backButton.getHeight())){
@@ -133,6 +137,14 @@ public class MenuTrackScreen implements Screen {
         batch.dispose();
     }
 
+    /**
+     * Checks if the screen was touched in a specific square
+     * @param x1
+     * @param x2
+     * @param y1
+     * @param y2
+     * @return true is touched, flase if not
+     */
     private boolean isTouched(float x1, float x2, float y1, float y2){
         input.set(Gdx.input.getX(),Gdx.input.getY(),0);
         camera.unproject(input);

@@ -2,7 +2,6 @@ package com.mygdx.game.logic;
 
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -10,6 +9,9 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
+/**
+ * Class Player, manages a player
+ */
 public class Player {
 
     private Car car;
@@ -23,6 +25,17 @@ public class Player {
     private SpriteBatch batch;
     private OrthographicCamera camera;
 
+    /**
+     * Creates a new Player
+     * @param sprite Player's car sprite
+     * @param tracks Track tracks/lanes
+     * @param curves Points that belong to a curve
+     * @param initialLane Initial lane of the car
+     * @param bPos Beginning position of the car
+     * @param camera
+     * @param batch
+     * @param sr
+     */
     public Player(Sprite sprite, Array<Array<Vector2> > tracks, Array<Array<Integer> > curves, int initialLane, Vector2 bPos, OrthographicCamera camera, SpriteBatch batch, ShapeRenderer sr){
         this.tracks=tracks;
         curveRightPoints=curves.first();
@@ -35,6 +48,9 @@ public class Player {
         car= new Car(sprite, tracks.get(lane), camera, batch, sr);
     }
 
+    /**
+     * returns if car is in Curve
+     */
     private void isInCurve(){
         if(curveRightPoints.contains(car.getWaypoint(),true)){
             car.setInCurveRight();
@@ -44,6 +60,10 @@ public class Player {
             car.setOutCurve();
     }
 
+    /**
+     * Updates Players car movement
+     * @param deltaTime time elapsed from last frame
+     */
     public void update(float deltaTime){
         if(!car.isOffTrack() && !car.isExploding()) {
             car.setPath(tracks.get(lane));
@@ -62,14 +82,25 @@ public class Player {
         }
     }
 
+    /**
+     * Returns Player's car
+     * @return car
+     */
     public Car getCar() {
         return car;
     }
 
+    /**
+     * Returns current Player's lap
+     * @return lap
+     */
     public int getLap(){
         return car.getLap();
     }
 
+    /**
+     * Puts the player in race after a short delay
+     */
     private void rejoinRace(){
         rejoinTime+=Gdx.graphics.getDeltaTime();
         if(rejoinTime>0.7f){
@@ -77,14 +108,18 @@ public class Player {
         }
     }
 
-    public int getDistanceDrove(){
-        return car.getWaypointsPassed();
-    }
-
+    /**
+     * Returns current Player's lane
+     * @return lane
+     */
     public int getLane(){
         return lane;
     }
 
+    /**
+     * Sets player's lane as a new one
+     * @param lane new lane
+     */
     public void setLane(int lane){
         this.lane=lane;
     }

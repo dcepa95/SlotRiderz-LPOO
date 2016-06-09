@@ -11,7 +11,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.mygdx.game.MyGdxGame;
 
 /**
- * Created by Amp on 05/06/2016.
+ * Finish Screen that appears after the game
  */
 public class FinishScreen implements Screen {
     private Sprite position;
@@ -23,6 +23,11 @@ public class FinishScreen implements Screen {
     private int baseRes=1280;
     private int pos;
 
+    /**
+     * Creates a finish screen
+     * @param app game application
+     * @param pos position that the player ended
+     */
     public FinishScreen(MyGdxGame app, int pos){
         this.pos=pos;
         this.app=app;
@@ -89,15 +94,5 @@ public class FinishScreen implements Screen {
     @Override
     public void dispose() {
 
-    }
-
-    private boolean isTouched(float x1, float x2, float y1, float y2){
-        input.set(Gdx.input.getX(),Gdx.input.getY(),0);
-        camera.unproject(input);
-        if ( input.x >= x1 && input.x <= x2 && input.y >= y1 && input.y <=y2){
-            if(Gdx.input.justTouched())
-                return true;
-        }
-        return false;
     }
 }
